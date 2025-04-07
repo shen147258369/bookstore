@@ -8,28 +8,26 @@ from be.model.db_conn import DBConn
 
 class Seller(DBConn):
     def __init__(self):
-        super().__init__()  # 初始化 MongoDB 连接
+        super().__init__()
 
     def create_store(self, user_id: str, store_id: str) -> Tuple[int, str]:
         """创建新店铺"""
         try:
-            # 验证用户存在性
+
             if not self.user_id_exist(user_id):
                 return error.error_non_exist_user_id(user_id)
-            
-            # 检查店铺是否已存在
+
             if self.store_id_exist(store_id):
                 return error.error_exist_store_id(store_id)
-            
-            # 插入店铺元数据
+
             self.user_store.insert_one({
                 "store_id": store_id,
                 "user_id": user_id,
                 "books": []
             })
-            
+
             return 200, "ok"
-            
+
         except PyMongoError as e:
             logging.error(f"MongoDB error: {str(e)}")
             return 528, str(e)
@@ -47,22 +45,19 @@ class Seller(DBConn):
     ) -> Tuple[int, str]:
         """添加图书到店铺"""
         try:
-            # 验证用户和店铺存在性
             if not self.user_id_exist(user_id):
                 return error.error_non_exist_user_id(user_id)
             if not self.store_id_exist(store_id):
                 return error.error_non_exist_store_id(store_id)
-            
-            # 检查图书是否已存在
+
             if self.book_id_exist(store_id, book_id):
                 return error.error_exist_book_id(book_id)
-            
-            # 解析图书信息
+
             try:
                 book_info = json.loads(book_json_str)
             except json.JSONDecodeError:
                 return 531, "Invalid book JSON format"
-            
+
             # 添加图书到店铺库存
             self.stores.update_one(
                 {"store_id": store_id},
@@ -75,9 +70,9 @@ class Seller(DBConn):
                     }
                 }}
             )
-            
+
             return 200, "ok"
-            
+
         except PyMongoError as e:
             logging.error(f"MongoDB error: {str(e)}")
             return 528, str(e)
@@ -99,11 +94,11 @@ class Seller(DBConn):
                 return error.error_non_exist_user_id(user_id)
             if not self.store_id_exist(store_id):
                 return error.error_non_exist_store_id(store_id)
-            
+
             # 检查图书是否存在
             if not self.book_id_exist(store_id, book_id):
                 return error.error_non_exist_book_id(book_id)
-            
+
             # 原子操作增加库存
             result = self.stores.update_one(
                 {
@@ -112,12 +107,52 @@ class Seller(DBConn):
                 },
                 {"$inc": {"books.$.stock": add_stock_level}}
             )
-            
+
             if result.modified_count == 0:
                 return error.error_non_exist_book_id(book_id)
-            
+
             return 200, "ok"
-            
+
+        except PyMongoError as e:
+            logging.error(f"MongoDB error: {str(e)}")
+            return 528, str(e)
+        except Exception as e:
+            logging.error(f"Unexpected error: {str(e)}")
+            return 530, str(e)
+
+    def ship_order(self, seller_id: str, store_id: str, order_id: str) -> Tuple[int, str]:
+        """发货订单"""
+        try:
+            # 获取订单信息
+            order = self.new_order.find_one({
+                "order_id": order_id,
+                "store_id": store_id
+            })
+            if not order:
+                return error.error_invalid_order_id(order_id)
+
+            status = order.get("status")
+
+            # 验证卖家权限
+            store_owner = self.user_store.find_one({
+                "user_id": seller_id,
+                "store_id": store_id
+            })
+            if not store_owner:
+                return error.error_authorization_fail()
+
+            # 检查状态
+            if status != 'paid':
+                return error.error_order_status(order_id)
+
+            # 更新状态
+            self.new_order.update_one(
+                {"order_id": order_id},
+                {"$set": {"status": "shipped"}}
+            )
+
+            return 200, "ok"
+
         except PyMongoError as e:
             logging.error(f"MongoDB error: {str(e)}")
             return 528, str(e)

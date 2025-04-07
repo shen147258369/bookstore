@@ -18,6 +18,8 @@ error_code = {
     526: "",
     527: "",
     528: "",
+    530: "unexpected error canceling order {}",
+    531: "order status error, order id {}",
 }
 
 
@@ -54,12 +56,17 @@ def error_invalid_order_id(order_id):
 
 
 def error_not_sufficient_funds(order_id):
-    return 519, error_code[518].format(order_id)
+    return 519, error_code[519].format(order_id)
 
 
 def error_authorization_fail():
     return 401, error_code[401]
 
+def error_unexpected_cancel_order(order_id):
+    return 530, error_code[530].format(order_id)
+
+def error_order_status(order_id):
+    return 531, error_code[531].format(order_id)
 
 def error_and_message(code, message):
     return code, message

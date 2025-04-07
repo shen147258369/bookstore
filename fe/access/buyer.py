@@ -48,3 +48,46 @@ class Buyer:
         headers = {"token": self.token}
         r = requests.post(url, headers=headers, json=json)
         return r.status_code
+    
+    def receive_order(self, order_id: str) -> (int, str):
+        """买家确认收货"""
+        json = {
+            "user_id": self.user_id,
+            "order_id": order_id,
+        }
+        url = urljoin(self.url_prefix, "receive_order")
+        headers = {"token": self.token}
+        r = requests.post(url, headers=headers, json=json)
+
+        # Assuming the response has a JSON body with a 'message' field
+        response_data = r.json()
+        message = response_data.get("message", "No message in response")
+
+        return r.status_code, message
+
+
+    def get_order_status(self, order_id: str) -> (int, str):
+        """获取订单状态"""
+        headers = {"token": self.token}
+        params = {
+            "user_id": self.user_id,  # 使用实例自身的user_id
+            "order_id": order_id
+        }
+        url = urljoin(self.url_prefix, "order_status")
+        r = requests.get(url, headers=headers, params=params)
+        if r.status_code != 200:
+            return r.status_code, ""
+        return r.status_code, r.json().get("status")
+    
+    def cancel_order(self, order_id: str) -> (int, str):
+        """取消订单"""
+        json = {
+            "user_id": self.user_id,
+            "order_id": order_id,
+        }
+        url = urljoin(self.url_prefix, "cancel_order")
+        headers = {"token": self.token}
+        r = requests.post(url, headers=headers, json=json)
+        response_data = r.json()
+        message = response_data.get("message", "No message in response")
+        return r.status_code, message

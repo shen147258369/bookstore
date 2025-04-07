@@ -2,6 +2,7 @@ from flask import Blueprint
 from flask import request
 from flask import jsonify
 from be.model.buyer import Buyer
+from be.model import error 
 
 bp_buyer = Blueprint("buyer", __name__, url_prefix="/buyer")
 
@@ -40,3 +41,53 @@ def add_funds():
     b = Buyer()
     code, message = b.add_funds(user_id, password, add_value)
     return jsonify({"message": message}), code
+
+@bp_buyer.route("/order_status", methods=["GET"])
+def get_order_status():
+    user_id = request.args.get("user_id")
+    order_id = request.args.get("order_id")
+    if not user_id or not order_id:
+        return jsonify({"message": "Missing user_id or order_id"}), 400
+
+    b = Buyer()
+    code, message, status = b.get_order_status(user_id, order_id)
+    
+    # 显式处理已知错误码
+    if code == 518:  # invalid order id
+        return jsonify({"message": f"Invalid order ID: {order_id}"}), 404
+    elif code == 401:  # authorization fail
+        return jsonify({"message": "User not authorized to view this order"}), 403
+    elif code != 200:
+        return jsonify({"message": message}), code
+    
+    return jsonify({"status": status}), 200
+
+@bp_buyer.route("/receive_order", methods=["POST"])
+def receive_order():
+    user_id = request.json.get("user_id")
+    order_id = request.json.get("order_id")
+    if not user_id or not order_id:
+        return jsonify({"message": "Missing user_id or order_id"}), 400
+
+    b = Buyer()
+    code, message = b.receive_order(user_id, order_id)
+
+    if code != 200:
+        return jsonify({"message": message}), code
+
+    return jsonify({"message": "Order received successfully"}), 200
+
+@bp_buyer.route("/cancel_order", methods=["POST"])
+def cancel_order():
+    user_id = request.json.get("user_id")
+    order_id = request.json.get("order_id")
+    if not user_id or not order_id:
+        return jsonify({"message": "Missing user_id or order_id"}), 400
+
+    b = Buyer()
+    code, message = b.cancel_order(user_id, order_id)
+    
+    if code != 200:
+        return jsonify({"message": message}), code
+
+    return jsonify({"message": "Order cancelled successfully"}), 200
