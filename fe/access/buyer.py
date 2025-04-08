@@ -2,6 +2,8 @@ import requests
 import simplejson
 from urllib.parse import urljoin
 from fe.access.auth import Auth
+from typing import Tuple, List
+from typing import Any
 
 
 class Buyer:
@@ -49,17 +51,14 @@ class Buyer:
         r = requests.post(url, headers=headers, json=json)
         return r.status_code
     
-    def receive_order(self, order_id: str) -> (int, str):
-        """买家确认收货"""
+    def receive_order(self, user_id: str, order_id: str) -> (int, str):
         json = {
-            "user_id": self.user_id,
+            "user_id": user_id,
             "order_id": order_id,
         }
         url = urljoin(self.url_prefix, "receive_order")
         headers = {"token": self.token}
         r = requests.post(url, headers=headers, json=json)
-
-        # Assuming the response has a JSON body with a 'message' field
         response_data = r.json()
         message = response_data.get("message", "No message in response")
 
@@ -67,20 +66,18 @@ class Buyer:
 
 
     def get_order_status(self, order_id: str) -> (int, str):
-        """获取订单状态"""
-        headers = {"token": self.token}
-        params = {
-            "user_id": self.user_id,  # 使用实例自身的user_id
-            "order_id": order_id
-        }
-        url = urljoin(self.url_prefix, "order_status")
-        r = requests.get(url, headers=headers, params=params)
-        if r.status_code != 200:
-            return r.status_code, ""
-        return r.status_code, r.json().get("status")
+            headers = {"token": self.token}
+            params = {
+                "user_id": self.user_id, 
+                "order_id": order_id
+            }
+            url = urljoin(self.url_prefix, "order_status")
+            r = requests.post(url, headers=headers, json=params)
+            if r.status_code != 200:
+                return r.status_code, ""
+            return r.status_code, r.json().get("order_status")
     
     def cancel_order(self, order_id: str) -> (int, str):
-        """取消订单"""
         json = {
             "user_id": self.user_id,
             "order_id": order_id,
@@ -91,3 +88,18 @@ class Buyer:
         response_data = r.json()
         message = response_data.get("message", "No message in response")
         return r.status_code, message
+    
+    def get_order_history(self) -> (int, str, list):
+        params = {"user_id": self.user_id}
+        url = urljoin(self.url_prefix, "order_history")
+        headers = {"token": self.token}
+        
+        try:
+            r = requests.post(url, headers=headers, json=params)
+            if r.status_code != 200:
+                return r.status_code, r.text if r.text else "Request failed", []
+            return r.status_code, "ok", r.json().get("orders", [])
+        except requests.exceptions.RequestException as e:
+            return 500, str(e), []
+        except ValueError as e:
+            return 500, "Invalid response format", []

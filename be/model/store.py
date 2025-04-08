@@ -1,67 +1,54 @@
+import logging
+import os
+from pymongo import MongoClient
 import threading
-from pymongo import MongoClient, ASCENDING
-from be.model.db_conn import DBConn
-
 
 class Store:
-    def __init__(self, db_path: str):
-        self.client = MongoClient('mongodb://localhost:27017/')
-        self.db = self.client['bookstore']
+    def __init__(self, db_path):
+        self.client = MongoClient()
+        self.db = self.client['bookstore']  # 使用 'bookstore' 作为数据库名
         self.init_tables()
 
     def init_tables(self):
         try:
-            self.db.users.create_index(
-                [("user_id", ASCENDING)],
-                unique=True,
-                name="user_id_unique"
-            )
-            self.db.user_store.create_index(
-                [("store_id", ASCENDING)],
-                unique=True,
-                name="store_id_unique"
-            )
-            self.db.stores.create_index(
-                [("store_id", ASCENDING), ("books.book_id", ASCENDING)],
-                unique=True,
-                name="store_book_unique"
-            )
-            self.db.orders.create_index(
-                [("order_id", ASCENDING)],
-                unique=True,
-                name="order_id_unique"
-            )
-            self.db.orders.create_index(
-                [("user_id", ASCENDING)],
-                name="user_id_index"
-            )
-            self.db.orders.create_index(
-                [("status", ASCENDING), ("timestamp", ASCENDING)],
-                name="status_time_compound"
-            )
-            self.db.books.create_index([
-                ("title", "text"),
-                ("author", "text"),
-                ("content", "text"),
-                ("tags", "text")
-            ], name="book_search_index", default_language="english")
+            # 创建用户集合
+            self.db.create_collection('user')
+            self.db['user'].create_index('user_id', unique=True)
+
+            # 创建用户店铺集合
+            self.db.create_collection('user_store')
+            self.db['user_store'].create_index([('user_id', 1), ('store_id', 1)], unique=True)
+
+            # 创建店铺集合
+            self.db.create_collection('store')
+            self.db['store'].create_index([('store_id', 1), ('book_id', 1)], unique=True)
+
+            # 创建新订单集合
+            self.db.create_collection('new_order')
+            self.db['new_order'].create_index('order_id', unique=True)
+            self.db['new_order'].create_index('user_id')
+            self.db['new_order'].create_index('store_id')
+            self.db['new_order'].create_index('status')
+            self.db['new_order'].create_index('order_time')
+
+            # 创建新订单详情集合
+            self.db.create_collection('new_order_detail')
+            self.db['new_order_detail'].create_index([('order_id', 1), ('book_id', 1)], unique=True)
 
         except Exception as e:
-            print(e)
+            logging.error(e)
 
-    def get_db_conn(self) -> DBConn:
-        return DBConn()
+    def get_db_conn(self):
+        return self.db
 
 database_instance: Store = None
+# global variable for database sync
 init_completed_event = threading.Event()
 
-def init_database(db_path: str):
+def init_database(db_path):
     global database_instance
     database_instance = Store(db_path)
-    init_completed_event.set()
 
-def get_db_conn() -> DBConn:
+def get_db_conn():
     global database_instance
-    if not init_completed_event.is_set():
-        init_completed_event.wait()
     return database_instance.get_db_conn()

@@ -42,25 +42,24 @@ def add_funds():
     code, message = b.add_funds(user_id, password, add_value)
     return jsonify({"message": message}), code
 
-@bp_buyer.route("/order_status", methods=["GET"])
+@bp_buyer.route("/order_status", methods=["POST"])
 def get_order_status():
-    user_id = request.args.get("user_id")
-    order_id = request.args.get("order_id")
+    user_id: str = request.json.get("user_id")
+    order_id: str = request.json.get("order_id")
     if not user_id or not order_id:
-        return jsonify({"message": "Missing user_id or order_id"}), 400
+        return jsonify({
+            "status": 400,
+            "message": "Missing user_id or order_id",
+            "order_status": None
+        }), 400
 
     b = Buyer()
     code, message, status = b.get_order_status(user_id, order_id)
-    
-    # 显式处理已知错误码
-    if code == 518:  # invalid order id
-        return jsonify({"message": f"Invalid order ID: {order_id}"}), 404
-    elif code == 401:  # authorization fail
-        return jsonify({"message": "User not authorized to view this order"}), 403
-    elif code != 200:
-        return jsonify({"message": message}), code
-    
-    return jsonify({"status": status}), 200
+    return jsonify({
+        "status": code,
+        "message": message,
+        "order_status": status if code == 200 else None
+    }), code
 
 @bp_buyer.route("/receive_order", methods=["POST"])
 def receive_order():
@@ -91,3 +90,29 @@ def cancel_order():
         return jsonify({"message": message}), code
 
     return jsonify({"message": "Order cancelled successfully"}), 200
+
+
+@bp_buyer.route("/order_history", methods=["POST"])
+def get_order_history():
+    user_id: str = request.json.get("user_id")
+
+    if not user_id:
+        return jsonify({"message": "Missing user_id"}), 400
+
+    b = Buyer()
+    code, message, orders = b.get_order_history(user_id)
+
+    if code == 511:  # non exist user id
+        return jsonify({"message": f"User not found: {user_id}"}), 404
+    elif code != 200:
+        return jsonify({"message": message}), code
+
+    formatted_orders: list[dict] = []
+    for order in orders:
+        formatted_order = {
+            **order,
+            "order_time": order["order_time"] if order.get("order_time") else None
+        }
+        formatted_orders.append(formatted_order)
+
+    return jsonify({"orders": formatted_orders}), 200

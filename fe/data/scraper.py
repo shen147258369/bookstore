@@ -6,10 +6,8 @@ import requests
 import random
 import time
 import logging
-from pymongo import MongoClient, UpdateOne
-from pymongo.errors import PyMongoError
-from bson.binary import Binary
-from typing import Tuple, List, Dict, Any
+import pymongo
+import base64
 
 user_agent = [
     "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 "
@@ -75,51 +73,32 @@ def get_user_agent():
 
 class Scraper:
     def __init__(self):
-        # MongoDB连接配置
-        self.client = MongoClient('mongodb://localhost:27017/')
-        self.db = self.client['bookstore']
-        
-        # 定义集合
-        self.tags_col = self.db['tags']
-        self.books_col = self.db['books']
-        self.progress_col = self.db['progress']
-        
-        # 初始化集合
-        self._init_collections()
-        
+        self.tag = ""
+        self.page = 0
         self.pattern_number = re.compile(r"\d+\.?\d*")
         logging.basicConfig(filename="scraper.log", level=logging.ERROR)
+        # 连接到 MongoDB
+        self.client = pymongo.MongoClient("mongodb://localhost:27017/")
+        self.db = self.client["bookstore"]
+        self.tags_collection = self.db["tags"]
+        self.book_collection = self.db["books"]
+        self.progress_collection = self.db["progress"]
 
-    def _init_collections(self) -> None:
-        """初始化集合和索引"""
-        # 创建索引（幂等操作）
-        self.books_col.create_index("id", unique=True)
-        self.tags_col.create_index("tag", unique=True)
-        self.progress_col.create_index("_id", unique=True)
+    def get_current_progress(self):
+        progress = self.progress_collection.find_one({"id": "0"})
+        if progress:
+            return progress.get("tag", ""), progress.get("page", 0)
+        return "", 0
 
-        # 初始化进度文档
-        if not self.progress_col.find_one({"_id": "global"}):
-            self.progress_col.insert_one({
-                "_id": "global",
-                "current_tag": "",
-                "current_page": 0
-            })
-
-    def get_current_progress(self) -> Tuple[str, int]:
-        doc = self.progress_col.find_one({"_id": "global"})
-        return doc.get("current_tag", ""), doc.get("current_page", 0)
-
-    def save_current_progress(self, current_tag: str, current_page: int) -> None:
-        self.progress_col.update_one(
-            {"_id": "global"},
-            {"$set": {
-                "current_tag": current_tag,
-                "current_page": current_page
-            }},
+    def save_current_progress(self, current_tag, current_page):
+        self.progress_collection.update_one(
+            {"id": "0"},
+            {"$set": {"tag": current_tag, "page": current_page}},
             upsert=True
         )
 
-    def start_grab(self) -> bool:
+    def start_grab(self):
+        self.create_tables()
         self.grab_tag()
         current_tag, current_page = self.get_current_progress()
         tags = self.get_tag_list()
@@ -131,158 +110,256 @@ class Scraper:
                 no = no + 20
         return True
 
-    # def create_tables(self):
-    #     conn = sqlite3.connect(self.database)
-    #     try:
-    #         conn.execute("CREATE TABLE tags (tag TEXT PRIMARY KEY)")
-    #         conn.commit()
-    #     except sqlite3.Error as e:
-    #         logging.error(str(e))
-    #         conn.rollback()
+    def create_tables(self):
+        # 创建索引
+        self.tags_collection.create_index("tag", unique=True)
+        self.book_collection.create_index("id", unique=True)
+        self.progress_collection.create_index("id", unique=True)
+        # 初始化进度
+        self.progress_collection.update_one(
+            {"id": "0"},
+            {"$set": {"tag": "", "page": 0}},
+            upsert=True
+        )
 
-    #     try:
-    #         conn.execute(
-    #             "CREATE TABLE book ("
-    #             "id TEXT PRIMARY KEY, title TEXT, author TEXT, "
-    #             "publisher TEXT, original_title TEXT, "
-    #             "translator TEXT, pub_year TEXT, pages INTEGER, "
-    #             "price INTEGER, currency_unit TEXT, binding TEXT, "
-    #             "isbn TEXT, author_intro TEXT, book_intro text, "
-    #             "content TEXT, tags TEXT, picture BLOB)"
-    #         )
-    #         conn.commit()
-    #     except sqlite3.Error as e:
-    #         logging.error(str(e))
-    #         conn.rollback()
-
-    #     try:
-    #         conn.execute(
-    #             "CREATE TABLE progress (id TEXT PRIMARY KEY, tag TEXT, page integer )"
-    #         )
-    #         conn.execute("INSERT INTO progress values('0', '', 0)")
-    #         conn.commit()
-    #     except sqlite3.Error as e:
-    #         logging.error(str(e))
-    #         conn.rollback()
-
-    def grab_tag(self) -> bool:
+    def grab_tag(self):
         url = "https://book.douban.com/tag/?view=cloud"
         r = requests.get(url, headers=get_user_agent())
-        h: etree.Element = etree.HTML(r.text)
-        
-        tags: List[str] = h.xpath('//td/a/@href')  # 类型标注修正
-        
-        bulk_ops = []
-        for tag in tags:
-            t = tag.strip("/tag")
-            bulk_ops.append(
-                UpdateOne(
-                    {"tag": t},
-                    {"$setOnInsert": {"tag": t}},
-                    upsert=True
-                )
-            )
+        r.encoding = "utf-8"
+        h: etree.ElementBase = etree.HTML(r.text)
+        tags = h.xpath(
+            '/html/body/div[@id="wrapper"]/div[@id="content"]'
+            '/div[@class="grid-16-8 clearfix"]/div[@class="article"]'
+            '/div[@class=""]/div[@class="indent tag_cloud"]'
+            "/table/tbody/tr/td/a/@href"
+        )
         try:
-            if bulk_ops:
-                self.tags_col.bulk_write(bulk_ops)
-            return True
-        except PyMongoError as e:
-            logging.error(str(e))
+            for tag in tags:
+                t = tag.strip("/tag")
+                self.tags_collection.insert_one({"tag": t})
+        except pymongo.errors.DuplicateKeyError:
+            pass
+        return True
+
+    def grab_book_list(self, tag="小说", pageno=1):
+        logging.info("start to grab tag {} page {}...".format(tag, pageno))
+        self.save_current_progress(tag, pageno)
+        url = "https://book.douban.com/tag/{}?start={}&type=T".format(tag, pageno)
+        r = requests.get(url, headers=get_user_agent())
+        r.encoding = "utf-8"
+        h: etree.Element = etree.HTML(r.text)
+
+        li_list = h.xpath(
+            '/html/body/div[@id="wrapper"]/div[@id="content"]'
+            '/div[@class="grid-16-8 clearfix"]'
+            '/div[@class="article"]/div[@id="subject_list"]'
+            '/ul/li/div[@class="info"]/h2/a/@href'
+        )
+        next_page = h.xpath(
+            '/html/body/div[@id="wrapper"]/div[@id="content"]'
+            '/div[@class="grid-16-8 clearfix"]'
+            '/div[@class="article"]/div[@id="subject_list"]'
+            '/div[@class="paginator"]/span[@class="next"]/a[@href]'
+        )
+        has_next = True
+        if len(next_page) == 0:
+            has_next = False
+        if len(li_list) == 0:
             return False
 
-    def grab_book_list(self, tag: str = "小说", pageno: int = 1) -> bool:
-        url = f"https://book.douban.com/tag/{tag}?start={(pageno - 1) * 20}&type=T"
-        r = requests.get(url, headers=get_user_agent())
-        h: etree.Element = etree.HTML(r.text)
-        book_ids = h.xpath('//li[@class="subject-item"]/div[@class="pic"]/a/@href')
-        book_ids = [re.search(r"/subject/(\d+)/", id).group(1) for id in book_ids if re.search(r"/subject/(\d+)/", id)]
-        for book_id in book_ids:
-            self.crow_book_info(book_id)
-        next_page = h.xpath('//span[@class="next"]/a')
-        has_next = bool(next_page)
+        for li in li_list:
+            li = li.strip()
+            book_id = li.strip("/").split("/")[-1]
+            try:
+                delay = float(random.randint(0, 200)) / 100.0
+                time.sleep(delay)
+                self.crow_book_info(book_id)
+            except BaseException as e:
+                logging.error(
+                    f"error when scrape {book_id}, {str(e)}"
+                )
         return has_next
 
-    def get_tag_list(self) -> List[str]:
-        """获取待处理的标签列表"""
-        pipeline = [
-            {"$match": {"tag": {"$gte": "$current_tag"}}},
-            {"$sort": {"tag": 1}},
-            {"$project": {"_id": 0, "tag": 1}}
-        ]
-        results = self.tags_col.aggregate(pipeline)
-        return [doc["tag"] for doc in results]
+    def get_tag_list(self):
+        current_tag, _ = self.get_current_progress()
+        cursor = self.tags_collection.find({"tag": {"$gte": current_tag}})
+        return [doc["tag"] for doc in cursor]
 
-    def crow_book_info(self, book_id: str) -> bool:
-        if self.books_col.find_one({"id": book_id}):
-            return True
+    def crow_book_info(self, book_id):
+        if self.book_collection.find_one({"id": book_id}):
+            return
 
-        url = f"https://book.douban.com/subject/{book_id}/"
+        url = "https://book.douban.com/subject/{}/".format(book_id)
         r = requests.get(url, headers=get_user_agent())
+        r.encoding = "utf-8"
         h: etree.Element = etree.HTML(r.text)
-
-        title = h.xpath('//span[@property="v:itemreviewed"]/text()')[0]
-        book_info_nodes = h.xpath('//div[@id="info"]/text()')
-        book_info = {}
-        for line in book_info_nodes:
-            if ":" in line:
-                key, value = line.split(":", 1)
-                book_info[key.strip()] = value.strip()
-
-        pages = h.xpath('//span[@property="v:pages"]/text()')
-        pages = int(pages[0]) if pages else 0
-
-        price_text = h.xpath('//span[@property="v:price"]/text()')
-        price_text = price_text[0] if price_text else ""
-        match = self.pattern_number.search(price_text)
-        price = float(match.group()) if match else 0
-        unit = price_text.replace(str(price), "")
-
-        author_intro = h.xpath('//div[@class="intro"]/p/text()')
-        author_intro = "\n".join(author_intro) if author_intro else ""
-
-        book_intro = h.xpath('//div[@class="related_info"]/div[@class="intro"]/p/text()')
-        book_intro = "\n".join(book_intro) if book_intro else ""
-
-        content = h.xpath('//div[@class="related_info"]/div[@class="indent"]/div[@class="intro"]/p/text()')
-        content = "\n".join(content) if content else ""
-
-        tags = h.xpath('//div[@id="db-tags-section"]/div[@class="indent"]/span/a/text()')
-        tags = " ".join(tags)
-
-        picture = h.xpath('//a[@class="nbg"]/img/@src')
-        picture = requests.get(picture[0]).content if picture else None
-
-        # 构建MongoDB文档
-        book_doc: Dict[str, Any] = {
-            "id": book_id,
-            "title": title,
-            "author": book_info.get("作者"),
-            "publisher": book_info.get("出版社"),
-            "original_title": book_info.get("原作名"),
-            "translator": book_info.get("译者"),
-            "pub_year": book_info.get("出版年"),
-            "pages": pages,
-            "price": price,
-            "currency_unit": unit,
-            "binding": book_info.get("装帧"),
-            "isbn": book_info.get("ISBN"),
-            "author_intro": author_intro,
-            "book_intro": book_intro,
-            "content": content,
-            "tags": [t.strip() for t in tags.split('\n') if t.strip()],
-            "pictures": [Binary(picture)] if picture else []
-        }
-
-        try:
-            self.books_col.update_one(
-                {"id": book_id},
-                {"$setOnInsert": book_doc},
-                upsert=True
-            )
-            return True
-        except PyMongoError as e:
-            logging.error(f"Insert failed: {str(e)}")
+        e_text = h.xpath('/html/body/div[@id="wrapper"]/h1/span/text()')
+        if len(e_text) == 0:
             return False
+
+        title = e_text[0]
+
+        elements = h.xpath(
+            '/html/body/div[@id="wrapper"]'
+            '/div[@id="content"]/div[@class="grid-16-8 clearfix"]'
+            '/div[@class="article"]'
+        )
+        if len(elements) == 0:
+            return False
+
+        e_article = elements[0]
+
+        book_intro = ""
+        author_intro = ""
+        content = ""
+        tags = ""
+
+        e_book_intro = e_article.xpath(
+            'div[@class="related_info"]'
+            '/div[@class="indent"][@id="link-report"]/*'
+            '/div[@class="intro"]/*/text()'
+        )
+        for line in e_book_intro:
+            line = line.strip()
+            if line != "":
+                book_intro = book_intro + line + "\n"
+
+        e_author_intro = e_article.xpath(
+            'div[@class="related_info"]'
+            '/div[@class="indent "]/*'
+            '/div[@class="intro"]/*/text()'
+        )
+        for line in e_author_intro:
+            line = line.strip()
+            if line != "":
+                author_intro = author_intro + line + "\n"
+
+        e_content = e_article.xpath(
+            'div[@class="related_info"]'
+            '/div[@class="indent"][@id="dir_' + book_id + '_full"]/text()'
+        )
+        for line in e_content:
+            line = line.strip()
+            if line != "":
+                content = content + line + "\n"
+
+        e_tags = e_article.xpath(
+            'div[@class="related_info"]/'
+            'div[@id="db-tags-section"]/'
+            'div[@class="indent"]/span/a/text()'
+        )
+        for line in e_tags:
+            line = line.strip()
+            if line != "":
+                tags = tags + line + "\n"
+
+        e_subject = e_article.xpath(
+            'div[@class="indent"]'
+            '/div[@class="subjectwrap clearfix"]'
+            '/div[@class="subject clearfix"]'
+        )
+        pic_href = e_subject[0].xpath('div[@id="mainpic"]/a/@href')
+        picture = None
+        if len(pic_href) > 0:
+            res = requests.get(pic_href[0], headers=get_user_agent())
+            picture = res.content
+
+        info_children = e_subject[0].xpath('div[@id="info"]/child::node()')
+
+        e_array = []
+        e_dict = dict()
+
+        for e in info_children:
+            if isinstance(e, etree._ElementUnicodeResult):
+                e_dict["text"] = e
+            elif isinstance(e, etree._Element):
+                if e.tag == "br":
+                    e_array.append(e_dict)
+                    e_dict = dict()
+                else:
+                    e_dict[e.tag] = e
+
+        book_info = dict()
+        for d in e_array:
+            label = ""
+            span = d.get("span")
+            a_label = span.xpath("span/text()")
+            if len(a_label) > 0 and label == "":
+                label = a_label[0].strip()
+            a_label = span.xpath("text()")
+            if len(a_label) > 0 and label == "":
+                label = a_label[0].strip()
+            label = label.strip(":")
+            text = d.get("text").strip()
+            e_a = d.get("a")
+            text.strip()
+            text.strip(":")
+            if label == "作者" or label == "译者":
+                a = span.xpath("a/text()")
+                if text == "" and len(a) == 1:
+                    text = a[0].strip()
+                if text == "" and e_a is not None:
+                    text_a = e_a.xpath("text()")
+                    if len(text_a) > 0:
+                        text = text_a[0].strip()
+                        text = re.sub(r"\s+", " ", text)
+            if text != "":
+                book_info[label] = text
+
+        unit = None
+        price = None
+        pages = None
+        try:
+            s_price = book_info.get("定价")
+            if s_price is None:
+                # price cannot be NULL
+                logging.error(
+                    "error when scrape book_id {}, cannot retrieve price...".format(book_id)
+                )
+                return False
+            else:
+                e = re.findall(self.pattern_number, s_price)
+                if len(e) != 0:
+                    number = e[0]
+                    unit = s_price.replace(number, "").strip()
+                    price = int(float(number) * 100)
+
+            s_pages = book_info.get("页数")
+            if s_pages is not None:
+                # pages can be NULL
+                e = re.findall(self.pattern_number, s_pages)
+                if len(e) != 0:
+                    pages = int(e[0])
+
+            # 构建要插入 MongoDB 的文档
+            book_document = {
+                "id": book_id,
+                "title": title,
+                "author": book_info.get("作者"),
+                "publisher": book_info.get("出版社"),
+                "original_title": book_info.get("原作名"),
+                "translator": book_info.get("译者"),
+                "pub_year": book_info.get("出版年"),
+                "pages": pages,
+                "price": price,
+                "currency_unit": unit,
+                "binding": book_info.get("装帧"),
+                "isbn": book_info.get("ISBN"),
+                "author_intro": author_intro,
+                "book_intro": book_intro,
+                "content": content,
+                "tags": tags,
+                "picture": picture
+            }
+
+            # 插入文档到 MongoDB
+            self.book_collection.insert_one(book_document)
+        except Exception as e:
+            logging.error("error when scrape {}, {}".format(book_id, str(e)))
+            return False
+
+        return True
+
 
 if __name__ == "__main__":
     scraper = Scraper()

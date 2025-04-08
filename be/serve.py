@@ -7,6 +7,7 @@ from be.view import auth
 from be.view import seller
 from be.view import buyer
 from be.model.store import init_database, init_completed_event
+from be.model.buyer import OrderCleaner 
 
 bp_shutdown = Blueprint("shutdown", __name__)
 
@@ -44,4 +45,8 @@ def be_run():
     app.register_blueprint(seller.bp_seller)
     app.register_blueprint(buyer.bp_buyer)
     init_completed_event.set()
+
+    order_cleaner = OrderCleaner()
+    order_cleaner.start()
+    
     app.run()
