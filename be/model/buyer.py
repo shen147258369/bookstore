@@ -3,9 +3,8 @@ import logging
 import threading
 import time
 from datetime import datetime, timedelta
-from typing import List, Tuple, Optional, Dict, Any
-from pymongo import MongoClient
-from pymongo.client_session import ClientSession
+from typing import List, Tuple, Optional
+from pymongo import ReturnDocument
 from pymongo.errors import PyMongoError, DuplicateKeyError
 from be.model import error
 from be.model.db_conn import DBConn
@@ -13,12 +12,10 @@ from be.model.db_conn import DBConn
 class Buyer(DBConn):
     def __init__(self):
         super().__init__()
-        self.lock = threading.RLock()  # 用于余额操作的细粒度锁
 
     def new_order(
         self, user_id: str, store_id: str, id_and_count: List[Tuple[str, int]]
     ) -> Tuple[int, str, str]:
-        """创建新订单（使用MongoDB多文档事务）"""
         order_id = ""
         try:
             # 前置检查
@@ -27,57 +24,51 @@ class Buyer(DBConn):
             if not self.store_id_exist(store_id):
                 return error.error_non_exist_store_id(store_id) + ("",)
 
-            # 生成唯一订单ID
             order_id = f"{user_id}_{store_id}_{uuid.uuid1().hex}"
-            created_time = datetime.utcnow()
-
-            with self.client.start_session() as session:
-                with session.start_transaction():
-                    items = []
-                    total = 0
+            items = []
+            
+            # 处理每个商品项（使用原子操作替代事务）
+            for book_id, count in id_and_count:
+                # 原子性库存检查和扣减
+                try:
+                    result = self.stores.find_one_and_update(
+                        {
+                            "store_id": store_id,
+                            "books.book_id": book_id,
+                            "books.stock": {"$gte": count}
+                        },
+                        {"$inc": {"books.$.stock": -count}},  # 扣减库存
+                        return_document=ReturnDocument.AFTER  # 返回更新后的文档
+                    )
                     
-                    # 处理每个商品项
-                    for book_id, count in id_and_count:
-                        # 原子性库存检查与扣减
-                        result = self.stores.find_one_and_update(
-                            {
-                                "store_id": store_id,
-                                "books.book_id": book_id,
-                                "books.stock": {"$gte": count}
-                            },
-                            {"$inc": {"books.$.stock": -count}},
-                            projection={"books.$": 1},
-                            session=session,
-                            return_document=True
-                        )
-                        
-                        if not result or "books" not in result or len(result["books"]) == 0:
-                            session.abort_transaction()
-                            return error.error_stock_level_low(book_id) + ("",)
+                    if not result:
+                        logging.error(f"Failed to update stock for book_id={book_id}. Not enough stock.")
+                        return error.error_stock_level_low(book_id) + (order_id,)
 
-                        book = result["books"][0]
-                        items.append({
-                            "book_id": book_id,
-                            "count": count,
-                            "price": book["price"]
-                        })
-                        total += book["price"] * count
+                    book = result["books"][0]  # 获取更新后的书籍信息
+                    items.append({
+                        "book_id": book_id,
+                        "count": count,
+                        "price": book["price"]
+                    })
+                except PyMongoError as e:
+                    logging.error(f"Error updating stock for book_id={book_id}: {str(e)}")
+                    return 528, str(e), order_id
 
-                    # 创建订单文档
-                    order_doc = {
-                        "order_id": order_id,
-                        "user_id": user_id,
-                        "store_id": store_id,
-                        "items": items,
-                        "total": total,
-                        "status": "unpaid",
-                        "timestamps": {
-                            "created": created_time,
-                            "updated": created_time
-                        }
-                    }
-                    self.orders.insert_one(order_doc, session=session)
-                    session.commit_transaction()
+            try:
+                self.orders.insert_one({
+                    "order_id": order_id,
+                    "user_id": user_id,
+                    "store_id": store_id,
+                    "items": items,
+                    "total": sum(item["price"] * item["count"] for item in items),
+                    "status": "unpaid",
+                    "create_time": datetime.utcnow(),
+                    "update_time": datetime.utcnow()
+                })
+            except PyMongoError as e:
+                logging.error(f"Error inserting order {order_id}: {str(e)}")
+                return 528, str(e), order_id
 
             return 200, "ok", order_id
 
@@ -85,14 +76,14 @@ class Buyer(DBConn):
             logging.error(f"Order ID conflict: {order_id}, {str(e)}")
             return 529, "Order ID conflict", ""
         except PyMongoError as e:
-            logging.error(f"MongoDB error: {str(e)}")
+            logging.error(f"MongoDB error in new_order: {str(e)}")
             return 528, str(e), ""
         except Exception as e:
-            logging.error(f"Unexpected error: {str(e)}", exc_info=True)
+            logging.error(f"Unexpected error in new_order: {str(e)}")
             return 530, str(e), ""
 
+
     def payment(self, user_id: str, password: str, order_id: str) -> Tuple[int, str]:
-        """处理支付（使用事务+乐观锁）"""
         try:
             with self.client.start_session() as session:
                 with session.start_transaction():

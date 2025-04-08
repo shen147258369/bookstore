@@ -1,8 +1,7 @@
-import logging
-import os
 import threading
 from pymongo import MongoClient, ASCENDING
 from be.model.db_conn import DBConn
+
 
 class Store:
     def __init__(self, db_path: str):
@@ -11,95 +10,48 @@ class Store:
         self.init_tables()
 
     def init_tables(self):
-        """初始化MongoDB集合和索引（幂等操作）"""
         try:
-            # 用户集合
-            self._create_index_with_cleanup(
-                collection=self.db.users,
-                index_name="user_id_unique",
-                keys=[("user_id", ASCENDING)],
-                unique=True
+            self.db.users.create_index(
+                [("user_id", ASCENDING)],
+                unique=True,
+                name="user_id_unique"
             )
-
-            # 用户-店铺关系集合
-            self._create_index_with_cleanup(
-                collection=self.db.user_store,
-                index_name="store_id_unique",
-                keys=[("store_id", ASCENDING)],
-                unique=True
+            self.db.user_store.create_index(
+                [("store_id", ASCENDING)],
+                unique=True,
+                name="store_id_unique"
             )
-
-            # 店铺库存集合
-            self._create_index_with_cleanup(
-                collection=self.db.stores,
-                index_name="store_book_unique",
-                keys=[("store_id", ASCENDING), ("books.book_id", ASCENDING)],
-                unique=True
+            self.db.stores.create_index(
+                [("store_id", ASCENDING), ("books.book_id", ASCENDING)],
+                unique=True,
+                name="store_book_unique"
             )
-
-            # 订单集合
-            self._create_index_with_cleanup(
-                collection=self.db.orders,
-                index_name="order_id_unique",
-                keys=[("order_id", ASCENDING)],
-                unique=True
+            self.db.orders.create_index(
+                [("order_id", ASCENDING)],
+                unique=True,
+                name="order_id_unique"
             )
-            self._create_index_with_cleanup(
-                collection=self.db.orders,
-                index_name="user_id_index",
-                keys=[("user_id", ASCENDING)]
+            self.db.orders.create_index(
+                [("user_id", ASCENDING)],
+                name="user_id_index"
             )
-            self._create_index_with_cleanup(
-                collection=self.db.orders,
-                index_name="status_create_time_compound",  # 修改索引名称
-                keys=[("status", ASCENDING), ("create_time", ASCENDING)]
+            self.db.orders.create_index(
+                [("status", ASCENDING), ("timestamp", ASCENDING)],
+                name="status_time_compound"
             )
-
-            # 书籍元数据集合
-            self._create_index_with_cleanup(
-                collection=self.db.books,
-                index_name="book_search_index",
-                keys=[
-                    ("title", "text"),
-                    ("author", "text"),
-                    ("content", "text"),
-                    ("tags", "text")
-                ],
-                **{"default_language": "english"}
-            )
-
-            logging.info("Database indexes initialized successfully")
-        except Exception as e:
-            logging.error(f"Initialize database failed: {str(e)}")
-            raise
-
-    def _create_index_with_cleanup(self, collection, index_name, keys, **kwargs):
-        """安全的索引创建方法（处理名称冲突）"""
-        try:
-            # 删除可能存在的旧索引
-            existing_indexes = collection.index_information()
-            if index_name in existing_indexes:
-                # 检查现有索引是否匹配
-                existing_keys = existing_indexes[index_name]['key']
-                if existing_keys != keys:
-                    collection.drop_index(index_name)
-                    logging.info(f"Dropped conflicting index: {index_name}")
-                else:
-                    return  # 索引已存在且相同，无需操作
-
-            # 创建新索引
-            collection.create_index(keys, name=index_name, **kwargs)
-            logging.info(f"Created index: {index_name}")
+            self.db.books.create_index([
+                ("title", "text"),
+                ("author", "text"),
+                ("content", "text"),
+                ("tags", "text")
+            ], name="book_search_index", default_language="english")
 
         except Exception as e:
-            logging.error(f"Failed to create index {index_name}: {str(e)}")
-            raise
+            print(e)
 
     def get_db_conn(self) -> DBConn:
         return DBConn()
 
-
-# 全局实例和初始化同步
 database_instance: Store = None
 init_completed_event = threading.Event()
 

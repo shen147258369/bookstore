@@ -5,8 +5,7 @@ from bson.binary import Binary
 from tqdm import tqdm
 
 def migrate():
-    # 配置路径
-    sqlite_path = r"/Users/shen/Desktop/books/CDMS.Xuan_ZHOU.2025Spring.DaSE/bookstore/fe/data/book_lx.db"
+    sqlite_path = r"/Users/shen/Desktop/bookstore/fe/data/book_lx.db"
     mongo_uri = "mongodb://localhost:27017/"
     
     # 连接数据库

@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import logging
 from typing import Tuple, Union
@@ -11,7 +12,6 @@ class Seller(DBConn):
         super().__init__()
 
     def create_store(self, user_id: str, store_id: str) -> Tuple[int, str]:
-        """创建新店铺"""
         try:
 
             if not self.user_id_exist(user_id):
@@ -103,14 +103,17 @@ class Seller(DBConn):
             result = self.stores.update_one(
                 {
                     "store_id": store_id,
-                    "books.book_id": book_id
+                    "books.book_id": book_id  # 确保匹配嵌套文档
                 },
-                {"$inc": {"books.$.stock": add_stock_level}}
+                {
+                    "$inc": {"books.$.stock": add_stock_level},
+                    "$set": {"last_updated": datetime.utcnow()}
+                }
             )
-
-            if result.modified_count == 0:
+            
+            if result.matched_count == 0:
                 return error.error_non_exist_book_id(book_id)
-
+                
             return 200, "ok"
 
         except PyMongoError as e:
