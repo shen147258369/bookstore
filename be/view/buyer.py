@@ -9,19 +9,15 @@ bp_buyer = Blueprint("buyer", __name__, url_prefix="/buyer")
 
 @bp_buyer.route("/new_order", methods=["POST"])
 def new_order():
-    user_id: str = request.json.get("user_id")
-    store_id: str = request.json.get("store_id")
-    books: [] = request.json.get("books")
-    id_and_count = []
-    for book in books:
-        book_id = book.get("id")
-        count = book.get("count")
-        id_and_count.append((book_id, count))
+    data = request.get_json()
+    user_id = data.get("user_id")
+    store_id = data.get("store_id")
+    books = data.get("books", [])
+    id_and_count = [(book["id"], book["count"]) for book in books]
 
-    b = Buyer()
-    code, message, order_id = b.new_order(user_id, store_id, id_and_count)
+    buyer = Buyer()
+    code, message, order_id = buyer.new_order(user_id, store_id, id_and_count)
     return jsonify({"message": message, "order_id": order_id}), code
-
 
 @bp_buyer.route("/payment", methods=["POST"])
 def payment():

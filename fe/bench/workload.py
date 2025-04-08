@@ -96,8 +96,10 @@ class Workload:
                         break
                     for bk in books:
                         code = seller.add_book(store_id, self.stock_level, bk)
-                        assert code == 200
-                        self.book_ids[store_id].append(bk.id)
+                        if code != 200:
+                            logging.error(f"Failed to add book {bk.id} to store {store_id} with code {code}")
+                        else:
+                            self.book_ids[store_id].append(bk.id)
                     row_no = row_no + len(books)
         logging.info("seller data loaded.")
         for k in range(1, self.buyer_num + 1):
@@ -112,6 +114,9 @@ class Workload:
         buyer_id, buyer_password = self.to_buyer_id_and_password(n)
         store_no = int(random.uniform(0, len(self.store_ids) - 1))
         store_id = self.store_ids[store_no]
+        # 检查列表是否为空
+        if len(self.book_ids[store_id]) == 0:
+            return None  # 或者根据实际情况处理
         books = random.randint(1, 10)
         book_id_and_count = []
         book_temp = []

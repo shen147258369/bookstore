@@ -13,8 +13,7 @@ class Buyer(db_conn.DBConn):
         db_conn.DBConn.__init__(self)
 
     def new_order(
-        self, user_id: str, store_id: str, id_and_count: [(str, int)]
-    ) -> (int, str, str):
+        self, user_id: str, store_id: str, id_and_count: [(str, int)]) -> (int, str, str):
         order_id = ""
         try:
             if not self.user_id_exist(user_id):
@@ -65,6 +64,15 @@ class Buyer(db_conn.DBConn):
             return 530, "{}".format(str(e)), ""
 
         return 200, "ok", order_id
+    
+    def check_and_cancel_unpaid_orders(self):
+        order_col = self.conn['new_order']
+        unpaid_orders = order_col.find({'status': 'unpaid'})
+        for order in unpaid_orders:
+            order_time = order.get('order_time')
+            if order_time and (datetime.now() - order_time).total_seconds() > 900:  # 假设超过15分钟未支付则取消
+                order_id = order.get('order_id')
+                self.cancel_order(order.get('user_id'), order_id)
 
     def payment(self, user_id: str, password: str, order_id: str) -> (int, str):
         try:
@@ -108,29 +116,26 @@ class Buyer(db_conn.DBConn):
             if balance < total_price:
                 return error.error_not_sufficient_funds(order_id)
 
-            # 7. 执行支付事务
-            with self.conn.client.start_session() as session:
-                with session.start_transaction():
-                    # 扣买家余额
-                    user_col.update_one(
-                        {'user_id': buyer_id, 'balance': {'$gte': total_price}},
-                        {'$inc': {'balance': -total_price}},
-                        session=session
-                    )
+            # 7. 执行支付操作
+            # 扣买家余额
+            result = user_col.update_one(
+                {'user_id': buyer_id, 'balance': {'$gte': total_price}},
+                {'$inc': {'balance': -total_price}}
+            )
+            if result.matched_count == 0:
+                return error.error_not_sufficient_funds(order_id)
 
-                    # 加商家余额
-                    user_col.update_one(
-                        {'user_id': seller_id},
-                        {'$inc': {'balance': total_price}},
-                        session=session
-                    )
+            # 加商家余额
+            user_col.update_one(
+                {'user_id': seller_id},
+                {'$inc': {'balance': total_price}}
+            )
 
-                    # 更新订单状态为paid
-                    order_col.update_one(
-                        {'order_id': order_id},
-                        {'$set': {'status': 'paid'}},
-                        session=session
-                    )
+            # 更新订单状态为paid
+            order_col.update_one(
+                {'order_id': order_id},
+                {'$set': {'status': 'paid'}}
+            )
 
             return 200, "ok"
 
@@ -155,6 +160,8 @@ class Buyer(db_conn.DBConn):
                 return error.error_non_exist_user_id(user_id)
 
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return 530, "{}".format(str(e))
 
         return 200, "ok"
@@ -259,7 +266,7 @@ class Buyer(db_conn.DBConn):
 
         except Exception as e:
             logging.error(f"Unexpected error in get_order_history: {str(e)}")
-            return 530, "{}".format(str(e)), []
+            return 530, "{}".format(str(e))
 
     def cancel_order(self, user_id: str, order_id: str) -> (int, str):
         """
@@ -349,22 +356,19 @@ class OrderCleaner(threading.Thread):
                 for order in orders_to_cancel:
                     order_id, store_id = order.get('order_id'), order.get('store_id')
                     try:
-                        with conn.client.start_session() as session:
-                            with session.start_transaction():
-                                order_detail_col = conn['new_order_detail']
-                                for item in order_detail_col.find({'order_id': order_id}):
-                                    book_id, count = item.get('book_id'), item.get('count')
-                                    conn['store'].update_one(
-                                        {'store_id': store_id, 'book_id': book_id},
-                                        {'$inc': {'stock_level': count}},
-                                        session=session
-                                    )
+                        # 移除事务处理，直接执行恢复库存和更新订单状态
+                        order_detail_col = conn['new_order_detail']
+                        for item in order_detail_col.find({'order_id': order_id}):
+                            book_id, count = item.get('book_id'), item.get('count')
+                            conn['store'].update_one(
+                                {'store_id': store_id, 'book_id': book_id},
+                                {'$inc': {'stock_level': count}}
+                            )
 
-                                order_col.update_one(
-                                    {'order_id': order_id},
-                                    {'$set': {'status': 'cancelled'}},
-                                    session=session
-                                )
+                        order_col.update_one(
+                            {'order_id': order_id},
+                            {'$set': {'status': 'cancelled'}}
+                        )
 
                         logging.info(f"[OrderCleaner] Successfully cancelled order {order_id}")
 

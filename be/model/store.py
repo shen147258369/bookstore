@@ -6,7 +6,7 @@ import threading
 class Store:
     def __init__(self, db_path):
         self.client = MongoClient()
-        self.db = self.client['bookstore']  # 使用 'bookstore' 作为数据库名
+        self.db = self.client['bookstore']
         self.init_tables()
 
     def init_tables(self):

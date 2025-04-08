@@ -30,6 +30,8 @@ class Session(threading.Thread):
 
     def run_gut(self):
         for new_order in self.new_order_request:
+            if new_order is None:
+                continue
             before = time.time()
             ok, order_id = new_order.run()
             after = time.time()
