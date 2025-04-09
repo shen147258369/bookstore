@@ -79,7 +79,7 @@ class Scraper:
         logging.basicConfig(filename="scraper.log", level=logging.ERROR)
         # 连接到 MongoDB
         self.client = pymongo.MongoClient("mongodb://localhost:27017/")
-        self.db = self.client["bookstore"]
+        self.db = self.client["bookstore_lx"]
         self.tags_collection = self.db["tags"]
         self.book_collection = self.db["books"]
         self.progress_collection = self.db["progress"]

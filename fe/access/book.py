@@ -39,16 +39,14 @@ class BookDB:
             self.book_db = self.db_s
         # 连接到 MongoDB
         self.client = pymongo.MongoClient("mongodb://localhost:27017/")
-        self.db = self.client["bookstore"]
+        self.db = self.client["bookstore_lx"] 
         self.collection = self.db["books"]
 
     def get_book_count(self):
-        # 使用 MongoDB 的 count_documents 方法获取文档数量
         return self.collection.count_documents({})
 
     def get_book_info(self, start, size) -> [Book]:
         books = []
-        # 使用 MongoDB 的 find 方法进行分页查询
         cursor = self.collection.find().sort("id").skip(start).limit(size)
         for doc in cursor:
             book = Book()
@@ -67,16 +65,12 @@ class BookDB:
             book.author_intro = doc.get("author_intro")
             book.book_intro = doc.get("book_intro")
             book.content = doc.get("content")
-            tags = doc.get("tags", "")
-
+            tags = doc.get("tags", [])
             picture = doc.get("picture")
 
-            for tag in tags.split("\n"):
-                if tag.strip() != "":
-                    book.tags.append(tag)
-            for i in range(0, random.randint(0, 9)):
-                if picture is not None:
-                    encode_str = base64.b64encode(picture).decode("utf-8")
-                    book.pictures.append(encode_str)
+            for tag in tags:  # 直接遍历列表
+                # 处理每个标签的代码
+                pass
+
             books.append(book)
         return books

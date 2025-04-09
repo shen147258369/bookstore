@@ -99,7 +99,7 @@ def get_order_history():
     code, message, orders = b.get_order_history(user_id)
 
     if code == 511:  # non exist user id
-        return jsonify({"message": f"User not found: {user_id}"}), 404
+        return jsonify({"message": f"User not found: {user_id}"}), 400
     elif code != 200:
         return jsonify({"message": message}), code
 

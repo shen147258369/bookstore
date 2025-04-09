@@ -22,6 +22,7 @@ class TestNewOrder:
         )
         assert ok
         code, _ = self.buyer.new_order(self.store_id, buy_book_id_list)
+        print (code)
         assert code != 200
 
     def test_low_stock_level(self):
@@ -30,6 +31,7 @@ class TestNewOrder:
         )
         assert ok
         code, _ = self.buyer.new_order(self.store_id, buy_book_id_list)
+        print(code)
         assert code != 200
 
     def test_ok(self):

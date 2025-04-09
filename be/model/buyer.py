@@ -12,46 +12,54 @@ class Buyer(db_conn.DBConn):
     def __init__(self):
         db_conn.DBConn.__init__(self)
 
-    def new_order(
-        self, user_id: str, store_id: str, id_and_count: [(str, int)]) -> (int, str, str):
+    def new_order(self, user_id: str, store_id: str, id_and_count: [(str, int)]) -> (int, str, str):
         order_id = ""
         try:
+            # 检查用户和店铺存在性
             if not self.user_id_exist(user_id):
                 return error.error_non_exist_user_id(user_id) + (order_id,)
             if not self.store_id_exist(store_id):
                 return error.error_non_exist_store_id(store_id) + (order_id,)
-            uid = "{}_{}_{}".format(user_id, store_id, str(uuid.uuid1()))
 
+            # 生成订单ID
+            uid = f"{user_id}_{store_id}_{uuid.uuid1()}"
+
+            # 处理每个书籍
             for book_id, count in id_and_count:
-                book_col = self.conn['store']
-                book = book_col.find_one({'store_id': store_id, 'book_id': book_id})
-                if book is None:
+                book = self.conn['store'].find_one({'store_id': store_id, 'book_id': book_id})
+                if not book:
                     return error.error_non_exist_book_id(book_id) + (order_id,)
 
-                stock_level = book.get('stock_level', 0)
-                book_info = book.get('book_info', {})
-                price = book_info.get("price")
+                stock = book.get('stock_level', 0)
+                # 解析 book_info 字符串
+                try:
+                    book_info = json.loads(book.get('book_info', '{}'))
+                    price = book_info.get('price')
+                except json.JSONDecodeError:
+                    logging.error(f"Failed to decode book_info for book {book_id}")
+                    return 530, "Failed to decode book_info", ""
 
-                if stock_level < count:
+                if stock < count:
                     return error.error_stock_level_low(book_id) + (order_id,)
 
-                result = book_col.update_one(
+                # 原子性减少库存
+                result = self.conn['store'].update_one(
                     {'store_id': store_id, 'book_id': book_id, 'stock_level': {'$gte': count}},
                     {'$inc': {'stock_level': -count}}
                 )
-                if result.matched_count == 0:
+                if result.modified_count == 0:
                     return error.error_stock_level_low(book_id) + (order_id,)
 
-                order_detail_col = self.conn['new_order_detail']
-                order_detail_col.insert_one({
+                # 插入订单详情
+                self.conn['new_order_detail'].insert_one({
                     'order_id': uid,
                     'book_id': book_id,
                     'count': count,
                     'price': price
                 })
 
-            order_col = self.conn['new_order']
-            order_col.insert_one({
+            # 插入订单记录
+            self.conn['new_order'].insert_one({
                 'order_id': uid,
                 'store_id': store_id,
                 'user_id': user_id,
@@ -59,20 +67,11 @@ class Buyer(db_conn.DBConn):
                 'order_time': datetime.now(timezone.utc)
             })
             order_id = uid
-        except Exception as e:
-            logging.info("530, {}".format(str(e)))
-            return 530, "{}".format(str(e)), ""
+            return 200, "ok", order_id
 
-        return 200, "ok", order_id
-    
-    def check_and_cancel_unpaid_orders(self):
-        order_col = self.conn['new_order']
-        unpaid_orders = order_col.find({'status': 'unpaid'})
-        for order in unpaid_orders:
-            order_time = order.get('order_time')
-            if order_time and (datetime.now() - order_time).total_seconds() > 900:  # 假设超过15分钟未支付则取消
-                order_id = order.get('order_id')
-                self.cancel_order(order.get('user_id'), order_id)
+        except Exception as e:
+            logging.error("Failed to create order:", exc_info=True)
+            return 530, f"Internal error: {str(e)}", ""
 
     def payment(self, user_id: str, password: str, order_id: str) -> (int, str):
         try:
