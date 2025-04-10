@@ -4,8 +4,9 @@ from urllib.parse import urljoin
 from fe.access.auth import Auth
 from typing import Tuple, List
 from typing import Any
-
-
+from typing import Dict
+import logging
+import json
 class Buyer:
     def __init__(self, url_prefix, user_id, password):
         self.url_prefix = urljoin(url_prefix, "buyer/")
@@ -22,7 +23,6 @@ class Buyer:
         for id_count_pair in book_id_and_count:
             books.append({"id": id_count_pair[0], "count": id_count_pair[1]})
         json = {"user_id": self.user_id, "store_id": store_id, "books": books}
-        # print(simplejson.dumps(json))
         url = urljoin(self.url_prefix, "new_order")
         headers = {"token": self.token}
         r = requests.post(url, headers=headers, json=json)
@@ -103,3 +103,68 @@ class Buyer:
             return 500, str(e), []
         except ValueError as e:
             return 500, "Invalid response format", []
+        
+    def search_books(self, query: str, search_field: str = 'all', 
+                    store_id: str = None, page: int = 1, per_page: int = 10) -> Tuple[int, Dict]:
+        json_data = {
+            "user_id": self.user_id,
+            "query": query,
+            "search_field": search_field,
+            "store_id": store_id,
+            "page": page,
+            "per_page": per_page
+        }
+        url = urljoin(self.url_prefix, "search_books")
+        headers = {"token": self.token}
+        
+        try:
+            logging.debug(f"Sending search request: {json_data}")
+            
+            r = requests.post(url, headers=headers, json=json_data, timeout=5)
+            response_data = r.json()
+            
+            logging.debug(f"Search response: {response_data}")
+
+            if r.status_code == 200:
+                books = []
+                for book in response_data.get("result", {}).get("books", []):
+                    try:
+                        if isinstance(book.get("book_info"), str):
+                            book_info = json.loads(book["book_info"])
+                            book.update({
+                                "title": book_info.get("title"),
+                                "author": book_info.get("author"),
+                                "publisher": book_info.get("publisher"),
+                                "tags": book_info.get("tags", [])
+                            })
+                        books.append(book)
+                    except json.JSONDecodeError as e:
+                        logging.error(f"Failed to parse book_info: {e}")
+                        continue
+                
+                return r.status_code, {
+                    "books": books,
+                    "total": response_data.get("result", {}).get("total", 0),
+                    "page": response_data.get("result", {}).get("page", page),
+                    "per_page": response_data.get("result", {}).get("per_page", per_page),
+                    "total_pages": response_data.get("result", {}).get("total_pages", 0),
+                    "message": response_data.get("message", "success")
+                }
+            else:
+                return r.status_code, {
+                    "message": response_data.get("message", "Search failed"),
+                    "error": response_data.get("error", "")
+                }
+        
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Search request failed: {str(e)}")
+            return 500, {
+                "message": "Search service unavailable",
+                "error": str(e)
+            }
+        except json.JSONDecodeError as e:
+            logging.error(f"Invalid response format: {str(e)}")
+            return 500, {
+                "message": "Invalid server response",
+                "error": str(e)
+            }

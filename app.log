@@ -1,0 +1,11 @@
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 02:56:49] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 02:56:49] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 02:56:49] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 02:57:01] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 02:57:01] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 02:57:01] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 02:57:01] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 02:57:01] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 02:57:01] "POST /buyer/search_books HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 02:57:01] "GET /shutdown HTTP/1.1" 200 -

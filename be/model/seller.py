@@ -80,7 +80,6 @@ class Seller(db_conn.DBConn):
 
     def ship_order(self, seller_id: str, store_id: str, order_id: str) -> (int, str):
         try:
-            # 获取订单信息
             order_col = self.conn['new_order']
             order = order_col.find_one({'order_id': order_id, 'store_id': store_id})
             if not order:
@@ -88,17 +87,14 @@ class Seller(db_conn.DBConn):
 
             status = order.get('status')
 
-            # 验证卖家权限
             user_store_col = self.conn['user_store']
             seller = user_store_col.find_one({'user_id': seller_id, 'store_id': store_id})
             if not seller:
                 return error.error_authorization_fail()
 
-            # 检查状态
             if status != 'paid':
                 return error.error_order_status(order_id)
 
-            # 更新状态
             result = order_col.update_one(
                 {'order_id': order_id},
                 {'$set': {'status': 'shipped'}}

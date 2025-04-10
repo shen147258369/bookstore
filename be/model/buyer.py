@@ -6,7 +6,7 @@ from be.model import error
 import threading
 import time
 from datetime import datetime, timedelta, timezone
-
+from typing import List, Dict, Tuple
 
 class Buyer(db_conn.DBConn):
     def __init__(self):
@@ -15,23 +15,17 @@ class Buyer(db_conn.DBConn):
     def new_order(self, user_id: str, store_id: str, id_and_count: [(str, int)]) -> (int, str, str):
         order_id = ""
         try:
-            # 检查用户和店铺存在性
             if not self.user_id_exist(user_id):
                 return error.error_non_exist_user_id(user_id) + (order_id,)
             if not self.store_id_exist(store_id):
                 return error.error_non_exist_store_id(store_id) + (order_id,)
-
-            # 生成订单ID
             uid = f"{user_id}_{store_id}_{uuid.uuid1()}"
-
-            # 处理每个书籍
             for book_id, count in id_and_count:
                 book = self.conn['store'].find_one({'store_id': store_id, 'book_id': book_id})
                 if not book:
                     return error.error_non_exist_book_id(book_id) + (order_id,)
 
                 stock = book.get('stock_level', 0)
-                # 解析 book_info 字符串
                 try:
                     book_info = json.loads(book.get('book_info', '{}'))
                     price = book_info.get('price')
@@ -42,7 +36,6 @@ class Buyer(db_conn.DBConn):
                 if stock < count:
                     return error.error_stock_level_low(book_id) + (order_id,)
 
-                # 原子性减少库存
                 result = self.conn['store'].update_one(
                     {'store_id': store_id, 'book_id': book_id, 'stock_level': {'$gte': count}},
                     {'$inc': {'stock_level': -count}}
@@ -50,7 +43,6 @@ class Buyer(db_conn.DBConn):
                 if result.modified_count == 0:
                     return error.error_stock_level_low(book_id) + (order_id,)
 
-                # 插入订单详情
                 self.conn['new_order_detail'].insert_one({
                     'order_id': uid,
                     'book_id': book_id,
@@ -58,7 +50,6 @@ class Buyer(db_conn.DBConn):
                     'price': price
                 })
 
-            # 插入订单记录
             self.conn['new_order'].insert_one({
                 'order_id': uid,
                 'store_id': store_id,
@@ -87,7 +78,7 @@ class Buyer(db_conn.DBConn):
             if buyer_id != user_id:
                 return error.error_authorization_fail()
             if status != 'unpaid':
-                return error.error_order_status(order_id)  # 确保是未支付订单
+                return error.error_order_status(order_id)
 
             # 3. 验证支付密码
             user_col = self.conn['user']
@@ -166,30 +157,19 @@ class Buyer(db_conn.DBConn):
         return 200, "ok"
 
     def receive_order(self, user_id: str, order_id: str) -> (int, str):
-        """
-        买家确认收货
-        :param user_id: 买家ID
-        :param order_id: 订单ID
-        :return: (状态码, 消息)
-        """
         try:
-            # 检查订单是否存在且属于该买家
             order_col = self.conn['new_order']
             order = order_col.find_one({'order_id': order_id})
             if order is None:
                 return error.error_invalid_order_id(order_id)
 
             buyer_id, status = order.get('user_id'), order.get('status')
-
-            # 验证订单是否属于该买家
             if buyer_id != user_id:
                 return error.error_authorization_fail()
 
-            # 检查订单状态是否为已发货
             if status != "shipped":
                 return error.error_order_status(order_id)
-
-            # 更新订单状态为已完成
+            
             result = order_col.update_one(
                 {'order_id': order_id},
                 {'$set': {'status': 'completed'}}
@@ -223,22 +203,15 @@ class Buyer(db_conn.DBConn):
             return 500, f"Database error: {str(e)}", ""
 
     def get_order_history(self, user_id: str) -> (int, str, list):
-        """
-        获取用户的历史订单
-        :param user_id: 用户ID
-        :return: (状态码, 消息, 订单列表)
-        """
         try:
             if not self.user_id_exist(user_id):
                 return error.error_non_exist_user_id(user_id) + ([],)
 
-            # 查询所有订单基本信息
             order_col = self.conn['new_order']
             orders = []
             for order in order_col.find({'user_id': user_id}).sort('order_time', -1):
                 order_id, store_id, status, order_time = order.get('order_id'), order.get('store_id'), order.get('status'), order.get('order_time')
 
-                # 查询订单详情
                 order_detail_col = self.conn['new_order_detail']
                 items = []
                 total_price = 0.0
@@ -266,7 +239,87 @@ class Buyer(db_conn.DBConn):
         except Exception as e:
             logging.error(f"Unexpected error in get_order_history: {str(e)}")
             return 530, "{}".format(str(e))
+        
+    def search_books(self, user_id: str, query: str, search_field: str = 'all',
+                store_id: str = None, page: int = 1, per_page: int = 10) -> Tuple[int, str, Dict]:
+        try:
+            if not self.user_id_exist(user_id):
+                return error.error_non_exist_user_id(user_id) + (None,)
+            if store_id and not self.store_id_exist(store_id):
+                return error.error_non_exist_store_id(store_id) + (None,)
 
+            query_condition = {}
+            if store_id:
+                query_condition["store_id"] = store_id
+
+            cursor = self.conn['store'].find(
+                query_condition,
+                {"_id": 0, "store_id": 1, "book_id": 1, "book_info": 1, "stock_level": 1}
+            )
+            books = []
+            for doc in cursor:
+                try:
+                    book_info = json.loads(doc["book_info"]) if isinstance(doc["book_info"], str) else doc["book_info"]
+                    match = False
+                    query_lower = query.lower()
+                    
+                    if search_field == 'all':
+                        for field in ['title', 'author', 'publisher', 'book_intro', 'content']:
+                            field_value = str(book_info.get(field, '')).lower()
+                            if query_lower in field_value:
+                                match = True
+                                break
+                        if not match and isinstance(book_info.get('tags'), list):
+                            for tag in book_info['tags']:
+                                if query_lower in str(tag).lower():
+                                    match = True
+                                    break
+                    else:
+                        field_value = str(book_info.get(search_field, '')).lower()
+                        if search_field == 'tags' and isinstance(field_value, list):
+                            for tag in field_value:
+                                if query_lower in str(tag).lower():
+                                    match = True
+                                    break
+                        else:
+                            match = query_lower in field_value
+
+                    if match:
+                        books.append({
+                            "store_id": doc["store_id"],
+                            "book_id": doc["book_id"],
+                            "title": book_info.get("title"),
+                            "author": book_info.get("author"),
+                            "publisher": book_info.get("publisher"),
+                            "price": book_info.get("price"),
+                            "tags": book_info.get("tags", []),
+                            "stock": doc.get("stock_level", 0)
+                        })
+                except json.JSONDecodeError:
+                    logging.error(f"Failed to parse book_info for book {doc.get('book_id')}")
+                    continue
+                except Exception as e:
+                    logging.error(f"Error processing book {doc.get('book_id')}: {str(e)}")
+                    continue
+
+            # 分页处理
+            total = len(books)
+            start = (page - 1) * per_page
+            end = start + per_page
+            paginated_books = books[start:end]
+
+            return 200, "ok", {
+                "books": paginated_books,
+                "total": total,
+                "page": page,
+                "per_page": per_page,
+                "total_pages": max(1, (total + per_page - 1) // per_page)
+            }
+
+        except Exception as e:
+            logging.error(f"Search error: {str(e)}", exc_info=True)
+            return 500, f"Internal error: {str(e)}", None
+        
     def cancel_order(self, user_id: str, order_id: str) -> (int, str):
         """
         取消订单
@@ -275,23 +328,18 @@ class Buyer(db_conn.DBConn):
         :return: (状态码, 消息)
         """
         try:
-            # 检查订单是否存在且属于该用户
             order_col = self.conn['new_order']
             order = order_col.find_one({'order_id': order_id})
             if order is None:
                 return error.error_invalid_order_id(order_id)
 
             buyer_id, status, store_id = order.get('user_id'), order.get('status'), order.get('store_id')
-
-            # 验证订单是否属于该用户
             if buyer_id != user_id:
                 return error.error_authorization_fail()
 
-            # 检查订单状态是否为未支付
             if status != 'unpaid':
                 return error.error_order_status(order_id)
 
-            # 恢复库存
             order_detail_col = self.conn['new_order_detail']
             for item in order_detail_col.find({'order_id': order_id}):
                 book_id, count = item.get('book_id'), item.get('count')
@@ -300,7 +348,6 @@ class Buyer(db_conn.DBConn):
                     {'$inc': {'stock_level': count}}
                 )
 
-            # 更新订单状态
             result = order_col.update_one(
                 {'order_id': order_id},
                 {'$set': {'status': 'cancelled'}}
@@ -355,7 +402,6 @@ class OrderCleaner(threading.Thread):
                 for order in orders_to_cancel:
                     order_id, store_id = order.get('order_id'), order.get('store_id')
                     try:
-                        # 移除事务处理，直接执行恢复库存和更新订单状态
                         order_detail_col = conn['new_order_detail']
                         for item in order_detail_col.find({'order_id': order_id}):
                             book_id, count = item.get('book_id'), item.get('count')

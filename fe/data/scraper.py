@@ -111,11 +111,9 @@ class Scraper:
         return True
 
     def create_tables(self):
-        # 创建索引
         self.tags_collection.create_index("tag", unique=True)
         self.book_collection.create_index("id", unique=True)
         self.progress_collection.create_index("id", unique=True)
-        # 初始化进度
         self.progress_collection.update_one(
             {"id": "0"},
             {"$set": {"tag": "", "page": 0}},

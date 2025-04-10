@@ -5,7 +5,7 @@ from bson.binary import Binary
 from tqdm import tqdm
 
 def migrate():
-    sqlite_path = r"/Users/shen/Desktop/bookstore/fe/data/book_lx.db"
+    sqlite_path = r"F:\programming\122\CDMS.Xuan_ZHOU.2025Spring.DaSE\bookstore\fe\data\book_lx.db"
     mongo_uri = "mongodb://localhost:27017/"
     
     print("正在连接数据库...")
@@ -13,26 +13,23 @@ def migrate():
     mongo_client = pymongo.MongoClient(mongo_uri)
     mongo_db = mongo_client["bookstore_lx"]
     mongo_col = mongo_db["books"]
-    
     # 清空现有集合
     if "books" in mongo_db.list_collection_names():
         mongo_col.drop()
 
-    # 获取数据总量
     cursor = sqlite_conn.cursor()
     cursor.execute("SELECT COUNT(*) FROM book")
     total = cursor.fetchone()[0]
     print(f"共发现 {total} 条待迁移数据")
-    
-    # 迁移数据（平铺字段，与 Book 类结构一致）
+
     cursor.execute("SELECT * FROM book")
     for row in tqdm(cursor, total=total, desc="迁移进度", unit="book"):
         try:
-            pictures = [Binary(row[16])] if row[16] else []  # 存储为列表
+            pictures = [Binary(row[16])] if row[16] else []
             tags = row[15].split('|') if row[15] else []
 
             doc = {
-                "id": row[0],  # 注意原 book.py 中字段为 id，非 _id
+                "id": row[0], 
                 "title": row[1],
                 "author": row[2],
                 "publisher": row[3],

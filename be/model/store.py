@@ -11,19 +11,29 @@ class Store:
 
     def init_tables(self):
         try:
-            # 创建用户集合
             self.db.create_collection('user')
             self.db['user'].create_index('user_id', unique=True)
 
-            # 创建用户店铺集合
             self.db.create_collection('user_store')
             self.db['user_store'].create_index([('user_id', 1), ('store_id', 1)], unique=True)
 
-            # 创建店铺集合
-            self.db.create_collection('store')
-            self.db['store'].create_index([('store_id', 1), ('book_id', 1)], unique=True)
-
-            # 创建新订单集合
+            self.db['store'].create_index([
+                ('book_info.title', 'text'),
+                ('book_info.tags', 'text'),
+                ('book_info.content', 'text'),
+                ('book_info.book_intro', 'text'),
+                ('book_info.author', 'text'),  
+                ('book_info.publisher', 'text')  
+            ],
+            name='book_text_index',
+            weights={
+                'book_info.title': 10,
+                'book_info.tags': 5,
+                'book_info.content': 1,
+                'book_info.book_intro': 3,
+                'book_info.author': 8,  
+                'book_info.publisher': 6  
+            })
             self.db.create_collection('new_order')
             self.db['new_order'].create_index('order_id', unique=True)
             self.db['new_order'].create_index('user_id')
@@ -31,7 +41,6 @@ class Store:
             self.db['new_order'].create_index('status')
             self.db['new_order'].create_index('order_time')
 
-            # 创建新订单详情集合
             self.db.create_collection('new_order_detail')
             self.db['new_order_detail'].create_index([('order_id', 1), ('book_id', 1)], unique=True)
 

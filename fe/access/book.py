@@ -65,12 +65,16 @@ class BookDB:
             book.author_intro = doc.get("author_intro")
             book.book_intro = doc.get("book_intro")
             book.content = doc.get("content")
-            tags = doc.get("tags", [])
+            tags = doc.get("tags")
             picture = doc.get("picture")
 
-            for tag in tags:  # 直接遍历列表
-                # 处理每个标签的代码
-                pass
+            if tags:
+                    if len(tags) == 1 and isinstance(tags[0], str):
+                        book.tags.extend(tag.strip() for tag in tags[0].split("\n") if tag.strip())
 
+            if picture:
+                for _ in range(0, random.randint(0, 9)):
+                    encode_str = base64.b64encode(picture).decode("utf-8")
+                    book.pictures.append(encode_str)
             books.append(book)
         return books

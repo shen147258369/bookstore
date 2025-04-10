@@ -3,6 +3,7 @@ from flask import request
 from flask import jsonify
 from be.model.buyer import Buyer
 from be.model import error 
+import logging
 
 bp_buyer = Blueprint("buyer", __name__, url_prefix="/buyer")
 
@@ -98,7 +99,7 @@ def get_order_history():
     b = Buyer()
     code, message, orders = b.get_order_history(user_id)
 
-    if code == 511:  # non exist user id
+    if code == 511: 
         return jsonify({"message": f"User not found: {user_id}"}), 400
     elif code != 200:
         return jsonify({"message": message}), code
@@ -112,3 +113,51 @@ def get_order_history():
         formatted_orders.append(formatted_order)
 
     return jsonify({"orders": formatted_orders}), 200
+
+@bp_buyer.route("/search_books", methods=["POST"])
+def search_books():
+    try:
+        data = request.get_json()
+        user_id = data.get("user_id")
+        query = data.get("query")
+        search_field = data.get("search_field", "all")
+        store_id = data.get("store_id")
+        page = data.get("page", 1)
+        per_page = data.get("per_page", 10)
+
+        if not user_id:
+            return jsonify({"message": "User ID is required"}), 400
+        if not query:
+            return jsonify({"message": "Query is required"}), 400
+
+        buyer = Buyer()
+        code, message, result = buyer.search_books(
+            user_id=user_id,
+            query=query,
+            search_field=search_field,
+            store_id=store_id,
+            page=page,
+            per_page=per_page
+        )
+
+        if code != 200:
+            return jsonify({"message": message}), code
+
+        return jsonify({
+            "message": message,
+            "result": result,
+            "page": result["page"],
+            "per_page": result["per_page"],
+            "total": result["total"],
+            "total_pages": result["total_pages"]
+        }), code
+
+    except KeyError as ke:
+        logging.error(f"KeyError in search_books: {str(ke)}")
+        return jsonify({"message": f"Missing key in request data: {str(ke)}"}), 400
+    except ValueError as ve:
+        logging.error(f"ValueError in search_books: {str(ve)}")
+        return jsonify({"message": f"Invalid value in request data: {str(ve)}"}), 400
+    except Exception as e:
+        logging.error(f"Error in search_books: {str(e)}")
+        return jsonify({"message": "Internal server error"}), 500
