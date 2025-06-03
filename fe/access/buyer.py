@@ -120,7 +120,7 @@ class Buyer:
         try:
             logging.debug(f"Sending search request: {json_data}")
             
-            r = requests.post(url, headers=headers, json=json_data, timeout=5)
+            r = requests.post(url, headers=headers, json=json_data, timeout=100)
             response_data = r.json()
             
             logging.debug(f"Search response: {response_data}")
