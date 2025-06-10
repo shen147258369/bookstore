@@ -2,7 +2,8 @@ import os
 import random
 import base64
 import simplejson as json
-import pymongo
+import mysql.connector
+from typing import List
 
 class Book:
     id: str
@@ -20,61 +21,76 @@ class Book:
     author_intro: str
     book_intro: str
     content: str
-    tags: [str]
-    pictures: [bytes]
+    tags: List[str]
+    pictures: List[bytes]
 
     def __init__(self):
         self.tags = []
         self.pictures = []
 
-
 class BookDB:
     def __init__(self, large: bool = False):
-        parent_path = os.path.dirname(os.path.dirname(__file__))
-        self.db_s = os.path.join(parent_path, "data/book.db")
-        self.db_l = os.path.join(parent_path, "data/book_lx.db")
-        if large:
-            self.book_db = self.db_l
-        else:
-            self.book_db = self.db_s
-        # 连接到 MongoDB
-        self.client = pymongo.MongoClient("mongodb://localhost:27017/")
-        self.db = self.client["bookstore_lx"] 
-        self.collection = self.db["books"]
+        # MySQL connection setup
+        self.conn = mysql.connector.connect(
+            host="localhost", 
+            user="stu",
+            password="123456",
+            database="bookstore_lx"
+        )
+        self.cursor = self.conn.cursor(dictionary=True)  # Use dictionary cursor to get results as dicts
 
-    def get_book_count(self):
-        return self.collection.count_documents({})
+    def __del__(self):
+        self.cursor.close()
+        self.conn.close()
 
-    def get_book_info(self, start, size) -> [Book]:
+    def get_book_count(self) -> int:
+        self.cursor.execute("SELECT COUNT(*) as count FROM books")
+        result = self.cursor.fetchone()
+        return result['count']
+
+    def get_book_info(self, start: int, size: int) -> List[Book]:
         books = []
-        cursor = self.collection.find().sort("id").skip(start).limit(size)
-        for doc in cursor:
+        
+        # Get books with pagination
+        self.cursor.execute("""
+            SELECT * FROM books 
+            ORDER BY id 
+            LIMIT %s OFFSET %s
+        """, (size, start))
+        
+        for row in self.cursor.fetchall():
             book = Book()
-            book.id = doc.get("id")
-            book.title = doc.get("title")
-            book.author = doc.get("author")
-            book.publisher = doc.get("publisher")
-            book.original_title = doc.get("original_title")
-            book.translator = doc.get("translator")
-            book.pub_year = doc.get("pub_year")
-            book.pages = doc.get("pages")
-            book.price = doc.get("price")
-            book.currency_unit = doc.get("currency_unit")
-            book.binding = doc.get("binding")
-            book.isbn = doc.get("isbn")
-            book.author_intro = doc.get("author_intro")
-            book.book_intro = doc.get("book_intro")
-            book.content = doc.get("content")
-            tags = doc.get("tags")
-            picture = doc.get("picture")
-
-            if tags:
-                    if len(tags) == 1 and isinstance(tags[0], str):
-                        book.tags.extend(tag.strip() for tag in tags[0].split("\n") if tag.strip())
-
-            if picture:
-                for _ in range(0, random.randint(0, 9)):
-                    encode_str = base64.b64encode(picture).decode("utf-8")
-                    book.pictures.append(encode_str)
+            book.id = row.get("id")
+            book.title = row.get("title")
+            book.author = row.get("author")
+            book.publisher = row.get("publisher")
+            book.original_title = row.get("original_title")
+            book.translator = row.get("translator")
+            book.pub_year = row.get("pub_year")
+            book.pages = row.get("pages")
+            book.price = row.get("price")
+            book.currency_unit = row.get("currency_unit")
+            book.binding = row.get("binding")
+            book.isbn = row.get("isbn")
+            book.author_intro = row.get("author_intro")
+            book.book_intro = row.get("book_intro")
+            book.content = row.get("content")
+            
+            # Get tags for this book
+            self.cursor.execute("""
+                SELECT t.name FROM tags t
+                JOIN book_tags bt ON t.id = bt.tag_id
+                WHERE bt.book_id = %s
+            """, (int(book.id),))  # 确保查询时使用整数类型
+            tags = [tag['name'] for tag in self.cursor.fetchall()]
+            book.tags = tags
+            
+            # Handle pictures
+            pictures = row.get("pictures")
+            if pictures:
+                encode_str = base64.b64encode(pictures).decode("utf-8")
+                book.pictures.append(encode_str)
+            
             books.append(book)
+        
         return books

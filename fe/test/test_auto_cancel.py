@@ -43,7 +43,7 @@ class TestAutoCancelOrder:
         yield
 
     def test_auto_cancel(self):
-        # 等待超过自动取消订单的时间（这里假设是15分钟，你可以根据实际情况调整）
+        # 等待超过自动取消订单的时间（这里假设是15分钟，可以根据实际情况调整）
         time.sleep(90 + 10)  # 额外等待10秒确保线程有足够时间处理
 
         # 检查订单状态是否为已取消

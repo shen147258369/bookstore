@@ -9,3 +9,846 @@ INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 02:57:01] "POST /auth/login HTTP/1.1" 2
 INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 02:57:01] "POST /buyer/new_order HTTP/1.1" 200 -
 INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 02:57:01] "POST /buyer/search_books HTTP/1.1" 200 -
 INFO:werkzeug:127.0.0.1 - - [10/Apr/2025 02:57:01] "GET /shutdown HTTP/1.1" 200 -
+ERROR:root:[OrderCleaner] Critical error: 'MySQLConnection' object is not subscriptable
+Traceback (most recent call last):
+  File "/Users/shen/Desktop/bookstore/be/model/buyer.py", line 389, in run
+    order_col = conn['new_order']
+                ~~~~^^^^^^^^^^^^^
+TypeError: 'MySQLConnection' object is not subscriptable
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 20:01:43] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 20:01:43] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 20:01:43] "[31m[1mPOST /auth/logout HTTP/1.1[0m" 401 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 20:01:43] "[31m[1mPOST /auth/logout HTTP/1.1[0m" 401 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 20:01:43] "POST /auth/logout HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 20:01:43] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 20:01:43] "[31m[1mPOST /auth/login HTTP/1.1[0m" 401 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 20:01:43] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 20:01:43] "[31m[1mPOST /auth/login HTTP/1.1[0m" 401 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 20:01:43] "GET /shutdown HTTP/1.1" 200 -
+ERROR:root:[OrderCleaner] Critical error: 'MySQLConnection' object is not subscriptable
+Traceback (most recent call last):
+  File "/Users/shen/Desktop/bookstore/be/model/buyer.py", line 389, in run
+    order_col = conn['new_order']
+                ~~~~^^^^^^^^^^^^^
+TypeError: 'MySQLConnection' object is not subscriptable
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 21:23:51] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 21:23:51] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 21:23:51] "[35m[1mPOST /seller/create_store HTTP/1.1[0m" 530 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 21:23:51] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 21:23:51] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 21:23:51] "[35m[1mPOST /seller/create_store HTTP/1.1[0m" 530 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 21:23:51] "GET /shutdown HTTP/1.1" 200 -
+ERROR:root:[OrderCleaner] Critical error: 'MySQLConnection' object is not subscriptable
+Traceback (most recent call last):
+  File "/Users/shen/Desktop/bookstore/be/model/buyer.py", line 389, in run
+    order_col = conn['new_order']
+                ~~~~^^^^^^^^^^^^^
+TypeError: 'MySQLConnection' object is not subscriptable
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 21:31:43] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 21:31:43] "POST /auth/login HTTP/1.1" 200 -
+ERROR:be.serve:Exception on /seller/create_store [POST]
+Traceback (most recent call last):
+  File "/Users/shen/Desktop/bookstore/be/model/seller.py", line 69, in create_store
+    user_store_col = self.conn['user_store']
+                     ~~~~~~~~~^^^^^^^^^^^^^^
+TypeError: 'MySQLConnection' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/flask/app.py", line 1501, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/flask/app.py", line 1499, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/flask/app.py", line 1485, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shen/Desktop/bookstore/be/view/seller.py", line 15, in seller_create_store
+    code, message = s.create_store(user_id, store_id)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shen/Desktop/bookstore/be/model/seller.py", line 74, in create_store
+    except pymongo.errors.PyMongoError as e:
+           ^^^^^^^
+NameError: name 'pymongo' is not defined
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 21:31:43] "[35m[1mPOST /seller/create_store HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 21:31:43] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 21:31:43] "POST /auth/login HTTP/1.1" 200 -
+ERROR:be.serve:Exception on /seller/create_store [POST]
+Traceback (most recent call last):
+  File "/Users/shen/Desktop/bookstore/be/model/seller.py", line 69, in create_store
+    user_store_col = self.conn['user_store']
+                     ~~~~~~~~~^^^^^^^^^^^^^^
+TypeError: 'MySQLConnection' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/flask/app.py", line 2051, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/flask/app.py", line 1501, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/flask/app.py", line 1499, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/flask/app.py", line 1485, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**req.view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shen/Desktop/bookstore/be/view/seller.py", line 15, in seller_create_store
+    code, message = s.create_store(user_id, store_id)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/shen/Desktop/bookstore/be/model/seller.py", line 74, in create_store
+    except pymongo.errors.PyMongoError as e:
+           ^^^^^^^
+NameError: name 'pymongo' is not defined
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 21:31:43] "[35m[1mPOST /seller/create_store HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 21:31:43] "GET /shutdown HTTP/1.1" 200 -
+ERROR:root:[OrderCleaner] Critical error: 'MySQLConnection' object is not subscriptable
+Traceback (most recent call last):
+  File "/Users/shen/Desktop/bookstore/be/model/buyer.py", line 389, in run
+    order_col = conn['new_order']
+                ~~~~^^^^^^^^^^^^^
+TypeError: 'MySQLConnection' object is not subscriptable
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:23:06] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:23:06] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:23:06] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:23:06] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:23:06] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:23:06] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:23:06] "[35m[1mPOST /seller/create_store HTTP/1.1[0m" 514 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:23:06] "GET /shutdown HTTP/1.1" 200 -
+ERROR:root:[OrderCleaner] Critical error: 'MySQLConnection' object is not subscriptable
+Traceback (most recent call last):
+  File "/Users/shen/Desktop/bookstore/be/model/buyer.py", line 389, in run
+    order_col = conn['new_order']
+                ~~~~^^^^^^^^^^^^^
+TypeError: 'MySQLConnection' object is not subscriptable
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:30:25] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:30:25] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:30:25] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:30:44] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:30:44] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:30:44] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:30:44] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:30:44] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:30:44] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:30:44] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Failed to create order:
+Traceback (most recent call last):
+  File "/Users/shen/Desktop/bookstore/be/model/buyer.py", line 24, in new_order
+    book = self.conn['store'].find_one({'store_id': store_id, 'book_id': book_id})
+           ~~~~~~~~~^^^^^^^^^
+TypeError: 'MySQLConnection' object is not subscriptable
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:30:44] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 530 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:30:44] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:30:44] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:30:44] "POST /seller/create_store HTTP/1.1" 200 -
+ERROR:root:[OrderCleaner] Critical error: 'MySQLConnection' object is not subscriptable
+Traceback (most recent call last):
+  File "/Users/shen/Desktop/bookstore/be/model/buyer.py", line 389, in run
+    order_col = conn['new_order']
+                ~~~~^^^^^^^^^^^^^
+TypeError: 'MySQLConnection' object is not subscriptable
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:01] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:01] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:01] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:01] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:01] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:01] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:01] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Failed to create order:
+Traceback (most recent call last):
+  File "/Users/shen/Desktop/bookstore/be/model/buyer.py", line 24, in new_order
+    book = self.conn['store'].find_one({'store_id': store_id, 'book_id': book_id})
+           ~~~~~~~~~^^^^^^^^^
+TypeError: 'MySQLConnection' object is not subscriptable
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:01] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 530 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:01] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:01] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:01] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:07] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:07] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:07] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:07] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:07] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:07] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Failed to create order:
+Traceback (most recent call last):
+  File "/Users/shen/Desktop/bookstore/be/model/buyer.py", line 24, in new_order
+    book = self.conn['store'].find_one({'store_id': store_id, 'book_id': book_id})
+           ~~~~~~~~~^^^^^^^^^
+TypeError: 'MySQLConnection' object is not subscriptable
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:07] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 530 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:07] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:07] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:07] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:17] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:17] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:17] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:17] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:17] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Failed to create order:
+Traceback (most recent call last):
+  File "/Users/shen/Desktop/bookstore/be/model/buyer.py", line 24, in new_order
+    book = self.conn['store'].find_one({'store_id': store_id, 'book_id': book_id})
+           ~~~~~~~~~^^^^^^^^^
+TypeError: 'MySQLConnection' object is not subscriptable
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:17] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 530 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:31:17] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:01] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:01] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:01] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:19] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:19] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:19] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:19] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:19] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: Transaction already in progress
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:19] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:19] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:19] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:19] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:33] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:33] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:33] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:33] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:33] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: Transaction already in progress
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:33] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:33] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:33] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:33] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:47] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:47] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:47] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:47] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: Transaction already in progress
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:47] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:47] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:47] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:48] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:57] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:57] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:57] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:57] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: Transaction already in progress
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:57] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:41:57] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:44:57] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:44:57] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:44:57] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:44:57] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:44:57] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:44:57] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:44:57] "[35m[1mPOST /seller/create_store HTTP/1.1[0m" 514 -
+INFO:werkzeug:127.0.0.1 - - [03/Jun/2025 23:44:57] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "[35m[1mPOST /seller/add_book HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "[35m[1mPOST /seller/add_book HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "[35m[1mPOST /seller/add_book HTTP/1.1[0m" 516 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "[35m[1mPOST /seller/add_book HTTP/1.1[0m" 516 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "[35m[1mPOST /seller/add_book HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "[35m[1mPOST /seller/add_book HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:49:54] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:20] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:36] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:36] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:36] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:45] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:45] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:45] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:45] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:45] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:45] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: Transaction already in progress
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:45] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:45] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:45] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:45] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:50:51] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:18] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:18] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:18] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:35] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:35] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:35] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:35] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: Transaction already in progress
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:35] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:35] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:35] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:35] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:52] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:52] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:52] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:52] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:52] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:52] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:52] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: Transaction already in progress
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:52] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:52] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:52] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:52] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:58] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:58] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:58] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: Transaction already in progress
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:58] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:58] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:58] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:58] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:58] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:58] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:58] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:58] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:58] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:58] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: Transaction already in progress
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:58] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:52:59] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:15] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:15] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:15] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:20] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:20] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:20] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: Transaction already in progress
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:20] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:20] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:20] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:20] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:33] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:33] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:33] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: Transaction already in progress
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:33] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:33] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:33] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:33] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:44] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:44] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:44] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:44] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:44] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:44] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: Transaction already in progress
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:44] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:44] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:44] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:44] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:59] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:59] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:59] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:59] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:59] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:59] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: Transaction already in progress
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:59] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 09:53:59] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:00] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:00] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:00] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:05] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:05] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:05] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:05] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:05] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:05] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:05] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`bookstore_lx`.`order_details`, CONSTRAINT `order_details_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:05] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:05] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:05] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:05] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:12] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:12] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:12] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:12] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:12] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`bookstore_lx`.`order_details`, CONSTRAINT `order_details_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:12] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:12] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:12] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:12] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:24] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:24] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:24] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`bookstore_lx`.`order_details`, CONSTRAINT `order_details_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:24] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:24] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:24] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:24] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:42] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:42] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:42] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:42] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:42] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:42] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`bookstore_lx`.`order_details`, CONSTRAINT `order_details_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`) ON DELETE CASCADE)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:42] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:03:42] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:08:11] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:08:11] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:08:11] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:08:30] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:08:30] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:08:30] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:08:30] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:08:30] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:08:30] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:09:11] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:09:11] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:09:11] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:09:11] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'password' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:09:11] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:09:11] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:09:11] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:09:11] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:09:19] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:09:19] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:09:19] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:09:19] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in new_order: 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:09] "[35m[1mPOST /buyer/new_order HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:09] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:09] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:09] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:09] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:09] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:09] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:11] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:11] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:11] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:11] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'password' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:11] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:11] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:11] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:11] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:27] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:27] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:27] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:10:27] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:11:11] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:11:11] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:11:11] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:11:11] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'password' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:11:11] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:11:11] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:31] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:31] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:31] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'password' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:48:51] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:02] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:02] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'password' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'password' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:03] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:09] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:09] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:09] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:09] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:09] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:09] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:09] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:09] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:09] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'password' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:09] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:49:09] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:42] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:42] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:42] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'balance' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 10:59:58] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'balance' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'balance' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:12] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:19] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:19] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:19] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:19] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:19] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:19] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:19] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:19] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'balance' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:19] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:00:19] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:36] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:36] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:36] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:56] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:56] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:56] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:56] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:56] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:56] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:56] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:56] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:56] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'balance' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:56] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:56] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:56] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:30:56] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'balance' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:13] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:18] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:18] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:18] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:18] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:18] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:18] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:18] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'balance' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:18] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:18] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:18] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:19] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:30] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:30] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:30] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:30] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:30] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:30] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:30] "POST /buyer/new_order HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:30] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:30] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:30] "POST /auth/login HTTP/1.1" 200 -
+ERROR:root:Database error in add_funds: 1054 (42S22): Unknown column 'balance' in 'field list'
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:30] "[35m[1mPOST /buyer/add_funds HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:31:30] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:40:29] "[35m[1mPOST /auth/register HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:40:29] "[35m[1mPOST /auth/register HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:40:29] "[35m[1mPOST /auth/register HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:40:29] "[35m[1mPOST /auth/register HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:40:29] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:41:19] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:41:54] "[35m[1mPOST /auth/register HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:41:54] "[35m[1mPOST /auth/register HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:41:54] "[35m[1mPOST /auth/register HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:41:54] "[35m[1mPOST /auth/register HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 11:41:55] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:50] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:50] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:50] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:50] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:40:51] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:56:30] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:56:30] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:56:30] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:56:30] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:56:30] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:56:30] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:56:30] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:56:30] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:56:30] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:56:30] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:56:30] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:56:30] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:56:30] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:58:08] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:58:08] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:58:08] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:58:08] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:58:08] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:58:08] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:58:08] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:58:08] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:58:08] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:58:09] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:58:09] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:58:09] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 21:58:09] "GET /shutdown HTTP/1.1" 200 -
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 511 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:40] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 513 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "[35m[1mPOST /seller/add_stock_level HTTP/1.1[0m" 528 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /auth/register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /auth/login HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/create_store HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_book HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "POST /seller/add_stock_level HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Jun/2025 22:02:41] "GET /shutdown HTTP/1.1" 200 -

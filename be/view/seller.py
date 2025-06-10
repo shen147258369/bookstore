@@ -45,10 +45,27 @@ def add_stock_level():
 
 @bp_seller.route("/ship_order", methods=["POST"])
 def ship_order():
-    user_id = request.json.get("user_id")  # 卖家ID
+    user_id = request.json.get("user_id")
     store_id = request.json.get("store_id")
     order_id = request.json.get("order_id")
     
     s = seller.Seller()
     code, message = s.ship_order(user_id, store_id, order_id)
     return jsonify({"message": message}), code
+
+@bp_seller.route("/change_book_price", methods=["POST"])
+def change_book_price():
+    try:
+        user_id: str = request.json.get("user_id")
+        store_id: str = request.json.get("store_id")
+        book_id: str = request.json.get("book_id")
+        new_price: int = request.json.get("new_price")
+
+        s = seller.Seller()
+        code, message = s.change_book_price(user_id, store_id, book_id, new_price)
+
+        return jsonify({"message": message}), code
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"message": f"Internal error: {str(e)}"}), 500

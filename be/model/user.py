@@ -1,16 +1,9 @@
 import jwt
 import time
 import logging
-import pymongo
+import mysql.connector
 from be.model import error
 from be.model import db_conn
-
-# encode a json string like:
-#   {
-#       "user_id": [user name],
-#       "terminal": [terminal code],
-#       "timestamp": [ts]} to a JWT
-#   }
 
 
 def jwt_encode(user_id: str, terminal: str) -> str:
@@ -22,76 +15,84 @@ def jwt_encode(user_id: str, terminal: str) -> str:
     return encoded.decode("utf-8")
 
 
-# decode a JWT to a json string like:
-#   {
-#       "user_id": [user name],
-#       "terminal": [terminal code],
-#       "timestamp": [ts]} to a JWT
-#   }
 def jwt_decode(encoded_token, user_id: str) -> str:
     decoded = jwt.decode(encoded_token, key=user_id, algorithms="HS256")
     return decoded
 
 
 class User(db_conn.DBConn):
-    token_lifetime: int = 3600  # 3600 second
+    token_lifetime: int = 3600  # 3600 seconds
 
     def __init__(self):
-        db_conn.DBConn.__init__(self)
+        super().__init__()
 
     def __check_token(self, user_id, db_token, token) -> bool:
         try:
             if db_token != token:
                 return False
             jwt_text = jwt_decode(encoded_token=token, user_id=user_id)
-            ts = jwt_text["timestamp"]
+            ts = jwt_text.get("timestamp")
             if ts is not None:
                 now = time.time()
-                if self.token_lifetime > now - ts >= 0:
+                if 0 <= now - ts < self.token_lifetime:
                     return True
         except jwt.exceptions.InvalidSignatureError as e:
             logging.error(str(e))
-            return False
+        except Exception as e:
+            logging.error(str(e))
+        return False
 
     def register(self, user_id: str, password: str):
         try:
-            terminal = "terminal_{}".format(str(time.time()))
+            terminal = f"terminal_{time.time()}"
             token = jwt_encode(user_id, terminal)
-            user_col = self.conn['user']
-            existing_user = user_col.find_one({'user_id': user_id})
-            if existing_user:
+
+            cursor = self.conn.cursor()
+            cursor.execute("""
+                INSERT INTO users (user_id, password_hash, token, terminal) 
+                VALUES (%s, %s, %s, %s)
+            """, (user_id, password, token, terminal))
+            self.conn.commit()
+        except mysql.connector.Error as e:
+            self.conn.rollback()
+            if e.errno == 1062:  # Duplicate entry
                 return error.error_exist_user_id(user_id)
-            user_col.insert_one({
-                'user_id': user_id,
-                'password': password,
-                'balance': 0,
-                'token': token,
-                'terminal': terminal
-            })
-        except pymongo.errors.PyMongoError as e:
-            return 528, "{}".format(str(e))
+            return 528, str(e)
         except BaseException as e:
-            return 530, "{}".format(str(e))
+            self.conn.rollback()
+            return 530, str(e)
         return 200, "ok"
 
     def check_token(self, user_id: str, token: str) -> (int, str):
-        user_col = self.conn['user']
-        user = user_col.find_one({'user_id': user_id})
-        if user is None:
-            return error.error_authorization_fail()
-        db_token = user.get('token')
-        if not self.__check_token(user_id, db_token, token):
-            return error.error_authorization_fail()
-        return 200, "ok"
+        try:
+            cursor = self.conn.cursor(dictionary=True)
+            cursor.execute("SELECT token FROM users WHERE user_id = %s", (user_id,))
+            user = cursor.fetchone()
+            if user is None:
+                return error.error_authorization_fail()
+            db_token = user.get('token')
+            if not self.__check_token(user_id, db_token, token):
+                return error.error_authorization_fail()
+            return 200, "ok"
+        except mysql.connector.Error as e:
+            return 528, str(e)
+        except BaseException as e:
+            return 530, str(e)
 
     def check_password(self, user_id: str, password: str) -> (int, str):
-        user_col = self.conn['user']
-        user = user_col.find_one({'user_id': user_id})
-        if user is None:
-            return error.error_authorization_fail()
-        if password != user.get('password'):
-            return error.error_authorization_fail()
-        return 200, "ok"
+        try:
+            cursor = self.conn.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
+            user = cursor.fetchone()
+            if user is None:
+                return error.error_authorization_fail()
+            if password != user.get('password_hash'):
+                return error.error_authorization_fail()
+            return 200, "ok"
+        except mysql.connector.Error as e:
+            return 528, str(e)
+        except BaseException as e:
+            return 530, str(e)
 
     def login(self, user_id: str, password: str, terminal: str) -> (int, str, str):
         token = ""
@@ -101,18 +102,23 @@ class User(db_conn.DBConn):
                 return code, message, ""
 
             token = jwt_encode(user_id, terminal)
-            user_col = self.conn['user']
-            result = user_col.update_one(
-                {'user_id': user_id},
-                {'$set': {'token': token, 'terminal': terminal}}
-            )
-            if result.matched_count == 0:
+            cursor = self.conn.cursor()
+            cursor.execute("""
+                UPDATE users 
+                SET token = %s, terminal = %s 
+                WHERE user_id = %s
+            """, (token, terminal, user_id))
+            if cursor.rowcount == 0:
+                self.conn.rollback()
                 return error.error_authorization_fail() + ("",)
-        except pymongo.errors.PyMongoError as e:
-            return 528, "{}".format(str(e)), ""
+            self.conn.commit()
+            return 200, "ok", token
+        except mysql.connector.Error as e:
+            self.conn.rollback()
+            return 528, str(e), ""
         except BaseException as e:
-            return 530, "{}".format(str(e)), ""
-        return 200, "ok", token
+            self.conn.rollback()
+            return 530, str(e), ""
 
     def logout(self, user_id: str, token: str) -> (int, str):
         try:
@@ -120,19 +126,24 @@ class User(db_conn.DBConn):
             if code != 200:
                 return code, message
 
-            terminal = "terminal_{}".format(str(time.time()))
+            terminal = f"terminal_{time.time()}"
             dummy_token = jwt_encode(user_id, terminal)
-            user_col = self.conn['user']
-            result = user_col.update_one(
-                {'user_id': user_id},
-                {'$set': {'token': dummy_token, 'terminal': terminal}}
-            )
-            if result.matched_count == 0:
+            cursor = self.conn.cursor()
+            cursor.execute("""
+                UPDATE users 
+                SET token = %s, terminal = %s 
+                WHERE user_id = %s
+            """, (dummy_token, terminal, user_id))
+            if cursor.rowcount == 0:
+                self.conn.rollback()
                 return error.error_authorization_fail()
-        except pymongo.errors.PyMongoError as e:
-            return 528, "{}".format(str(e))
+            self.conn.commit()
+        except mysql.connector.Error as e:
+            self.conn.rollback()
+            return 528, str(e)
         except BaseException as e:
-            return 530, "{}".format(str(e))
+            self.conn.rollback()
+            return 530, str(e)
         return 200, "ok"
 
     def unregister(self, user_id: str, password: str) -> (int, str):
@@ -141,37 +152,42 @@ class User(db_conn.DBConn):
             if code != 200:
                 return code, message
 
-            user_col = self.conn['user']
-            result = user_col.delete_one({'user_id': user_id})
-            if result.deleted_count == 1:
-                pass
-            else:
+            cursor = self.conn.cursor()
+            cursor.execute("DELETE FROM users WHERE user_id = %s", (user_id,))
+            if cursor.rowcount == 0:
+                self.conn.rollback()
                 return error.error_authorization_fail()
-        except pymongo.errors.PyMongoError as e:
-            return 528, "{}".format(str(e))
+            self.conn.commit()
+        except mysql.connector.Error as e:
+            self.conn.rollback()
+            return 528, str(e)
         except BaseException as e:
-            return 530, "{}".format(str(e))
+            self.conn.rollback()
+            return 530, str(e)
         return 200, "ok"
 
-    def change_password(
-        self, user_id: str, old_password: str, new_password: str
-    ) -> (int, str):
+    def change_password(self, user_id: str, old_password: str, new_password: str) -> (int, str):
         try:
             code, message = self.check_password(user_id, old_password)
             if code != 200:
                 return code, message
 
-            terminal = "terminal_{}".format(str(time.time()))
+            terminal = f"terminal_{time.time()}"
             token = jwt_encode(user_id, terminal)
-            user_col = self.conn['user']
-            result = user_col.update_one(
-                {'user_id': user_id},
-                {'$set': {'password': new_password, 'token': token, 'terminal': terminal}}
-            )
-            if result.matched_count == 0:
+            cursor = self.conn.cursor()
+            cursor.execute("""
+                UPDATE users 
+                SET password_hash = %s, token = %s, terminal = %s 
+                WHERE user_id = %s
+            """, (new_password, token, terminal, user_id))
+            if cursor.rowcount == 0:
+                self.conn.rollback()
                 return error.error_authorization_fail()
-        except pymongo.errors.PyMongoError as e:
-            return 528, "{}".format(str(e))
+            self.conn.commit()
+        except mysql.connector.Error as e:
+            self.conn.rollback()
+            return 528, str(e)
         except BaseException as e:
-            return 530, "{}".format(str(e))
+            self.conn.rollback()
+            return 530, str(e)
         return 200, "ok"

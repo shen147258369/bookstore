@@ -6,16 +6,27 @@ class DBConn:
         self.page_size = 5
 
     def user_id_exist(self, user_id):
-        user_col = self.conn['user']
-        result = user_col.find_one({'user_id': user_id})
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT 1 FROM users WHERE user_id = %s", (user_id,))
+        result = cursor.fetchone()
+        cursor.close()
         return result is not None
 
     def book_id_exist(self, store_id, book_id):
-        book_col = self.conn['store']
-        result = book_col.find_one({'store_id': store_id, 'book_id': book_id})
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT 1 FROM store_inventory WHERE store_id = %s AND book_id = %s", (store_id, book_id))
+        result = cursor.fetchone()
+        cursor.close()
         return result is not None
 
     def store_id_exist(self, store_id):
-        store_col = self.conn['user_store']
-        result = store_col.find_one({'store_id': store_id})
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT 1 FROM stores WHERE store_id = %s", (store_id,))
+        result = cursor.fetchone()
+        cursor.close()
         return result is not None
+    
+    def check_store_owner(self, store_id, user_id):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT 1 FROM stores WHERE store_id = %s AND user_id = %s", (store_id, user_id))
+        return cursor.fetchone() is not None

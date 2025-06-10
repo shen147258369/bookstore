@@ -94,3 +94,15 @@ class Seller:
         if r.status_code != 200:
             return r.status_code, ""
         return r.status_code, r.json().get("status")
+    
+    def change_book_price(self, store_id: str, book_id: str, new_price: int) -> int:
+        json = {
+            "user_id": self.seller_id,
+            "store_id": store_id,
+            "book_id": book_id,
+            "new_price": new_price,
+        }
+        url = urljoin(self.url_prefix, "change_book_price") 
+        headers = {"token": self.token}
+        r = requests.post(url, headers=headers, json=json) 
+        return r.status_code
