@@ -250,7 +250,7 @@ class Store:
 database_instance: Store = None
 init_completed_event = threading.Event()
 
-def init_database(host="localhost", user="root", password="sqy205718", database="bookstore_lx"):
+def init_database(host="localhost", user="stu", password="123456", database="bookstore_lx"):
     global database_instance
     database_instance = Store(host=host, user=user, password=password, database=database)
     init_completed_event.set()

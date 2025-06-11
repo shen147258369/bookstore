@@ -45,6 +45,39 @@ class Seller(db_conn.DBConn):
             return 530, f"Internal error: {str(e)}"
         return 200, "ok"
 
+    def change_store_name(self, user_id: str, store_id: str, new_name: str) -> (int, str):
+        try:
+            if not self.user_id_exist(user_id):
+                return error.error_non_exist_user_id(user_id)
+            
+            if not self.store_id_exist(store_id):
+                return error.error_non_exist_store_id(store_id)
+            
+            if not self.check_store_owner(user_id, store_id):
+                return error.error_authorization_fail()
+            
+            cursor = self.conn.cursor()
+            cursor.execute(
+                "UPDATE stores SET store_name = %s "
+                "WHERE store_id = %s AND user_id = %s",
+                (new_name, store_id, user_id)
+            )
+            
+            if cursor.rowcount == 0:
+                cursor.close()
+                return error.error_authorization_fail()
+            
+            self.conn.commit()
+            cursor.close()
+            return 200, "ok"
+        
+        except mysql.connector.Error as e:
+            self.conn.rollback()
+            return 528, f"MySQL error: {str(e)}"
+        except Exception as e:
+            self.conn.rollback()
+            return 530, f"Internal error: {str(e)}"
+
     def add_book(self, user_id: str, store_id: str, book_id: str, book_json_str: str, stock_level: int):
         try:
             if not self.user_id_exist(user_id):
@@ -107,6 +140,7 @@ class Seller(db_conn.DBConn):
                 return error.error_authorization_fail()
 
             cursor = self.conn.cursor()
+            # 使用 FOR UPDATE 锁定行，防止并发修改
             cursor.execute(
                 "SELECT stock_quantity FROM store_inventory "
                 "WHERE store_id = %s AND book_id = %s FOR UPDATE",
@@ -118,11 +152,7 @@ class Seller(db_conn.DBConn):
                 return error.error_non_exist_book_id(book_id)
 
             current_stock = result[0]
-            new_stock = current_stock + add_stock_level
-
-            if new_stock < 0:
-                cursor.close()
-                return 400, "Stock level cannot be negative"
+            new_stock = max(0, current_stock + add_stock_level)  # 保证最小为0
 
             cursor.execute(
                 "UPDATE store_inventory SET stock_quantity = %s "
@@ -182,6 +212,36 @@ class Seller(db_conn.DBConn):
             return 528, f"MySQL error: {str(e)}"
         except Exception as e:
             self.conn.rollback()
+            return 530, f"Internal error: {str(e)}"
+
+    def get_book_price_and_stock(self, store_id: str, book_id: str) -> (int, dict):
+        """
+        返回格式：
+        - 成功时 (200, {"stock_quantity": int, "book_price": float})
+        - 失败时 (错误码, 错误信息字符串)
+        """
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute(
+                "SELECT stock_quantity, book_price FROM store_inventory WHERE store_id = %s AND book_id = %s",
+                (store_id, book_id)
+            )
+            result = cursor.fetchone()
+            cursor.close()
+
+            if result is None:
+                # 库存中没有该书
+                return 404, f"Book {book_id} not found in store {store_id}"
+
+            stock_quantity, book_price = result
+            return 200, {
+                "stock_quantity": stock_quantity,
+                "book_price": float(book_price)  # 如果price是decimal，转成float方便处理
+            }
+
+        except mysql.connector.Error as e:
+            return 528, f"MySQL error: {str(e)}"
+        except Exception as e:
             return 530, f"Internal error: {str(e)}"
 
     def change_book_price(self, user_id: str, store_id: str, book_id: str, new_price: int) -> (int, str):

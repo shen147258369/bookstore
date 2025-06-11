@@ -161,3 +161,21 @@ def search_books():
     except Exception as e:
         logging.error(f"Error in search_books: {str(e)}")
         return jsonify({"message": "Internal server error"}), 500
+
+@bp_buyer.route("/reduce_order_item", methods=["POST"])
+def reduce_order_item():
+    data = request.get_json()
+    user_id = data.get("user_id")
+    order_id = data.get("order_id")
+    book_id = data.get("book_id")
+    delta = data.get("delta")
+
+    if not all([user_id, order_id, book_id, delta is not None]):
+        return jsonify({"message": "Missing required parameters"}), 400
+
+    if not isinstance(delta, int) or delta <= 0:
+        return jsonify({"message": "Delta must be a positive integer"}), 400
+
+    buyer = Buyer()
+    code, message = buyer.reduce_order_item(user_id, order_id, book_id, delta)
+    return jsonify({"message": message}), code

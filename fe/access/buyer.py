@@ -28,6 +28,24 @@ class Buyer:
         r = requests.post(url, headers=headers, json=json)
         response_json = r.json()
         return r.status_code, response_json.get("order_id")
+    
+    def reduce_order_item(self, order_id: str, book_id: str, delta: int) -> Tuple[int, str]:
+        json_body = {
+            "user_id": self.user_id,
+            "order_id": order_id,
+            "book_id": book_id,
+            "delta": delta
+        }
+        url = urljoin(self.url_prefix, "reduce_order_item")
+        headers = {"token": self.token}
+        
+        try:
+            r = requests.post(url, headers=headers, json=json_body)
+            response_json = r.json()
+            return r.status_code, response_json.get("message", "")
+        except Exception as e:
+            logging.error(f"Failed to call reduce_order_item API: {str(e)}")
+            return 530, f"Internal error: {str(e)}"
 
     def payment(self, order_id: str):
         json = {
@@ -120,7 +138,7 @@ class Buyer:
         try:
             logging.debug(f"Sending search request: {json_data}")
             
-            r = requests.post(url, headers=headers, json=json_data, timeout=100)
+            r = requests.post(url, headers=headers, json=json_data, timeout=5)
             response_data = r.json()
             
             logging.debug(f"Search response: {response_data}")

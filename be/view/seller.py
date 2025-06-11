@@ -15,6 +15,19 @@ def seller_create_store():
     code, message = s.create_store(user_id, store_id)
     return jsonify({"message": message}), code
 
+@bp_seller.route("/change_store_name", methods=["POST"])
+def change_store_name():
+    user_id: str = request.json.get("user_id")
+    store_id: str = request.json.get("store_id")
+    new_name: str = request.json.get("new_name")
+
+    if not new_name:
+        return jsonify({"message": "店铺名称不能为空"}), 400
+
+    s = seller.Seller()
+    code, message = s.change_store_name(user_id, store_id, new_name)
+    
+    return jsonify({"message": message}), code
 
 @bp_seller.route("/add_book", methods=["POST"])
 def seller_add_book():
@@ -45,7 +58,7 @@ def add_stock_level():
 
 @bp_seller.route("/ship_order", methods=["POST"])
 def ship_order():
-    user_id = request.json.get("user_id")
+    user_id = request.json.get("user_id")  # 卖家ID
     store_id = request.json.get("store_id")
     order_id = request.json.get("order_id")
     
@@ -53,19 +66,29 @@ def ship_order():
     code, message = s.ship_order(user_id, store_id, order_id)
     return jsonify({"message": message}), code
 
+@bp_seller.route("/get_book_price_and_stock", methods=["GET"])
+def get_book_price_and_stock():
+    store_id = request.args.get("store_id")
+    book_id = request.args.get("book_id")
+    s = seller.Seller()
+    code, result = s.get_book_price_and_stock(store_id, book_id)
+
+    if code == 200:
+        return jsonify({
+            "stock_quantity": result["stock_quantity"],
+            "book_price": result["book_price"],
+        }), 200
+    else:
+        return jsonify({"message": result}), code
+
 @bp_seller.route("/change_book_price", methods=["POST"])
 def change_book_price():
-    try:
-        user_id: str = request.json.get("user_id")
-        store_id: str = request.json.get("store_id")
-        book_id: str = request.json.get("book_id")
-        new_price: int = request.json.get("new_price")
+    user_id: str = request.json.get("user_id")
+    store_id: str = request.json.get("store_id")
+    book_id: str = request.json.get("book_id")
+    new_price: int = request.json.get("new_price")
 
-        s = seller.Seller()
-        code, message = s.change_book_price(user_id, store_id, book_id, new_price)
+    s = seller.Seller()
+    code, message = s.change_book_price(user_id, store_id, book_id, new_price)
 
-        return jsonify({"message": message}), code
-    except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({"message": f"Internal error: {str(e)}"}), 500
+    return jsonify({"message": message}), code
